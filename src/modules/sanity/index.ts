@@ -1,0 +1,1 @@
+export { default as sanityRoutes } from './sanity.routes';

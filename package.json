@@ -29,6 +29,7 @@
   "homepage": "https://github.com/Rohit-0-0/Miio-Backend#readme",
   "description": "",
   "dependencies": {
+    "@sanity/client": "^7.25.0",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
