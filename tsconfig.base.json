@@ -5,8 +5,8 @@
     "lib": ["ES2023"],
 
     /* Modules */
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
 
     /* Paths */
     "baseUrl": ".",

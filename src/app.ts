@@ -2,10 +2,7 @@ import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import {
-  errorHandler,
-  notFoundHandler,
-} from '@/shared/middleware';
+import { errorHandler, notFoundHandler } from '@/shared/middleware';
 
 const app = express();
 
