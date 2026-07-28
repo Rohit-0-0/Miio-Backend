@@ -32,6 +32,11 @@ export class JournalController {
     return ok(res, journal);
   }
 
+  async getById(req: Request, res: Response) {
+    const journal = await this.service.getJournalById(req.params['id'] as string);
+    return ok(res, journal);
+  }
+
   async delete(req: Request, res: Response) {
     await this.service.deleteJournal(req.params['id'] as string);
     return ok(res, null, 'Journal deleted successfully');

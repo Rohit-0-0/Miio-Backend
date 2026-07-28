@@ -25,6 +25,12 @@ router.get(
   asyncHandler(controller.getBySlug.bind(controller)),
 );
 
+router.get(
+  '/id/:id',
+  validate(idParamSchema),
+  asyncHandler(controller.getById.bind(controller)),
+);
+
 router.post(
   '/',
   validate(createJournalSchema),
