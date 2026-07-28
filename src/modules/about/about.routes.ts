@@ -9,8 +9,8 @@ const router = Router();
 
 const controller = new AboutController();
 
-router.get('/', asyncHandler(controller.get.bind(controller)));
+router.get('/', asyncHandler(controller.get.bind(controller) as any));
 
-router.put('/',  validate(updateAboutSchema),asyncHandler(controller.update.bind(controller)));
+router.put('/',  validate(updateAboutSchema),asyncHandler(controller.update.bind(controller) as any));
 
 export default router;

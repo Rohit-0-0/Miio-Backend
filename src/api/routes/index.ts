@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { testRouter } from '@/modules/test';
 import { sanityRoutes } from '@/modules/sanity';
 import { aboutRoutes } from '@/modules/about';
+import { partnerRoutes } from '@/modules/partner';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.get('/health', (_req, res) => {
 router.use('/test', testRouter);
 router.use('/sanity', sanityRoutes);
 router.use('/about', aboutRoutes);
+router.use('/partner', partnerRoutes);
 
 export default router;
