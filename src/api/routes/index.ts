@@ -3,6 +3,7 @@ import { testRouter } from '@/modules/test';
 import { sanityRoutes } from '@/modules/sanity';
 import { aboutRoutes } from '@/modules/about';
 import { partnerRoutes } from '@/modules/partner';
+import { journalRoutes } from '@/modules/journal';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/test', testRouter);
 router.use('/sanity', sanityRoutes);
 router.use('/about', aboutRoutes);
 router.use('/partner', partnerRoutes);
+router.use('/journal', journalRoutes);
 
 export default router;
