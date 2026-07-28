@@ -10,10 +10,11 @@ export abstract class SingletonRepository<TData, TDocument> {
   }
 
   async save(data: TData): Promise<TDocument> {
-    return sanityClient.createOrReplace({
+    const payload = {
       _id: this.documentId,
       _type: this.documentType,
       ...data,
-    } as any) as Promise<TDocument>;
+    } as TData & { _id: string; _type: string };
+    return sanityClient.createOrReplace(payload as Parameters<typeof sanityClient.createOrReplace>[0]) as Promise<TDocument>;
   }
 }

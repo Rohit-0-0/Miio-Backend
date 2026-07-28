@@ -4,15 +4,15 @@ import type {
   RequestHandler,
   Response,
 } from 'express';
-import type { ZodObject } from 'zod';
+import type { ZodObject, ZodTypeAny } from 'zod';
 
 import { AppError } from '@/shared/errors';
 import { HTTP_STATUS } from '@/shared/constants';
 
 type RequestSchema = ZodObject<{
-  body: any;
-  query: any;
-  params: any;
+  body: ZodTypeAny;
+  query: ZodTypeAny;
+  params: ZodTypeAny;
 }>;
 
 export function validate(schema: RequestSchema): RequestHandler {
