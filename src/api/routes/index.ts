@@ -6,12 +6,13 @@ import { partnerRoutes } from '@/modules/partner';
 import { journalRoutes } from '@/modules/journal';
 import { mediaRoutes } from '@/modules/media';
 
+import homepageRouter from '@/modules/homepage/homepage.routes';
 import { authRoutes } from '@/modules/auth/auth.routes';
 
 const router = Router();
 
 // Future routes
-// router.use('/homepage', homepageRouter);
+router.use('/homepage', homepageRouter);
 // router.use('/about', aboutRouter);
 router.get('/health', (_req, res) => {
   res.status(200).json({
