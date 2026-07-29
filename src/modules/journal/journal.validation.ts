@@ -2,7 +2,11 @@ import { z } from 'zod';
 
 const imageSchema = z.object({
   assetId: z.string(),
-  alt: z.string(),
+  alt: z.string().optional(),
+  filename: z.string().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  mimeType: z.string().optional(),
 });
 
 const seoSchema = z.object({
