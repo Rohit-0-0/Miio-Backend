@@ -4,6 +4,7 @@ import { sanityRoutes } from '@/modules/sanity';
 import { aboutRoutes } from '@/modules/about';
 import { partnerRoutes } from '@/modules/partner';
 import { journalRoutes } from '@/modules/journal';
+import { mediaRoutes } from '@/modules/media';
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use('/sanity', sanityRoutes);
 router.use('/about', aboutRoutes);
 router.use('/partner', partnerRoutes);
 router.use('/journal', journalRoutes);
+router.use('/media', mediaRoutes);
 
 export default router;
