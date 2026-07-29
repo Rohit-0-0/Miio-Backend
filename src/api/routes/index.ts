@@ -6,6 +6,8 @@ import { partnerRoutes } from '@/modules/partner';
 import { journalRoutes } from '@/modules/journal';
 import { mediaRoutes } from '@/modules/media';
 
+import { authRoutes } from '@/modules/auth/auth.routes';
+
 const router = Router();
 
 // Future routes
@@ -22,6 +24,7 @@ router.get('/health', (_req, res) => {
   });
 });
 
+router.use('/auth', authRoutes);
 router.use('/test', testRouter);
 router.use('/sanity', sanityRoutes);
 router.use('/about', aboutRoutes);

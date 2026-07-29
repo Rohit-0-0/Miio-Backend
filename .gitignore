@@ -36,3 +36,4 @@ pnpm-debug.log*
 # Misc
 *.tmp
 *.temp
+/src/generated/prisma
