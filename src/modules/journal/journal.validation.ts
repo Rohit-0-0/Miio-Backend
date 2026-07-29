@@ -40,7 +40,7 @@ export const updateJournalSchema = z.object({
 });
 
 export const listJournalSchema = z.object({
-  body: z.object({}),
+  body: z.unknown().optional(),
   query: z.object({
     page: z.coerce.number().min(1).optional(),
     limit: z.coerce.number().min(1).max(100).optional(),
@@ -56,7 +56,7 @@ export const listJournalSchema = z.object({
 });
 
 export const slugParamSchema = z.object({
-  body: z.object({}),
+  body: z.unknown().optional(),
   query: z.object({}),
   params: z.object({
     slug: z.string().min(1),
@@ -64,7 +64,7 @@ export const slugParamSchema = z.object({
 });
 
 export const idParamSchema = z.object({
-  body: z.object({}),
+  body: z.unknown().optional(),
   query: z.object({}),
   params: z.object({
     id: z.string().min(1),
