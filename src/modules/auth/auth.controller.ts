@@ -2,9 +2,20 @@ import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { env } from '@/shared/config/env';
 import { ok } from '@/shared/utils/response';
+import type { AuthRequest } from '@/shared/middleware/auth';
 
 export class AuthController {
   private readonly service = new AuthService();
+
+  async me(req: Request, res: Response) {
+    const authReq = req as AuthRequest;
+    if (!authReq.user) {
+      return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+
+    const user = await this.service.getMe(authReq.user.userId);
+    return ok(res, user, 'User profile retrieved');
+  }
 
   async register(req: Request, res: Response) {
     const result = await this.service.register(req.body);

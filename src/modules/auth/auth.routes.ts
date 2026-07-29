@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AuthController } from './auth.controller';
 import { validate } from '@/shared/validation';
+import { requireAuth } from '@/shared/middleware/auth';
 import { 
   registerSchema, 
   loginSchema, 
@@ -12,6 +13,7 @@ import {
 const router = Router();
 const controller = new AuthController();
 
+router.get('/me', requireAuth, controller.me.bind(controller));
 router.post('/register', validate(registerSchema), controller.register.bind(controller));
 router.post('/login', validate(loginSchema), controller.login.bind(controller));
 router.post('/logout', controller.logout.bind(controller));
