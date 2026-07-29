@@ -9,9 +9,11 @@ import { mediaRoutes } from '@/modules/media';
 import homepageRouter from '@/modules/homepage/homepage.routes';
 import { authRoutes } from '@/modules/auth/auth.routes';
 
+import propertyRouter from '@/modules/property/property.routes';
+
 const router = Router();
 
-// Future routes
+router.use('/properties', propertyRouter);
 router.use('/homepage', homepageRouter);
 // router.use('/about', aboutRouter);
 router.get('/health', (_req, res) => {

@@ -1,0 +1,85 @@
+import type { LifecycleStatus, PropertyType, SyncProvider, SyncStatus } from './constants';
+import type { Image, Seo } from '@/types';
+
+export interface Amenity {
+  id: string;
+  label: string;
+  icon?: string;
+  category?: string;
+}
+
+export interface SyncMetadata {
+  provider: SyncProvider;
+  status: SyncStatus;
+  lastSyncedAt?: string;
+  lastError?: string;
+  version?: string;
+}
+
+export interface PropertyData {
+  // Stable ID
+  id: string;
+  guestyId?: string;
+
+  // General
+  title: string;
+  slug: string;
+  shortDescription?: string;
+  longDescription?: string;
+
+  // Location
+  city?: string;
+  state?: string;
+  country?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+
+  // Media
+  gallery?: Image[];
+  coverImageId?: string;
+
+  // Details
+  propertyType: PropertyType;
+  bedrooms?: number;
+  bathrooms?: number;
+  maxGuests?: number;
+  beds?: number;
+
+  // Amenities
+  amenities?: Amenity[];
+
+  // Availability / Booking Rules
+  minimumStay?: number;
+  maximumStay?: number;
+  petsAllowed?: boolean;
+  smokingAllowed?: boolean;
+  instantBook?: boolean;
+
+  // Publishing & Visibility
+  lifecycleStatus: LifecycleStatus;
+  featured?: boolean;
+  active?: boolean;
+  visibleOnWebsite?: boolean;
+  sortOrder?: number;
+
+  // SEO
+  seoTitle?: string;
+  seoDescription?: string;
+  canonicalUrl?: string;
+  ogImage?: Image;
+  metaRobots?: string;
+
+  // Sync
+  sync?: SyncMetadata;
+
+  // Soft Delete
+  deletedAt?: string;
+}
+
+export interface PropertyDocument extends PropertyData {
+  _id: string;
+  _type: string;
+  _createdAt: string;
+  _updatedAt: string;
+}
