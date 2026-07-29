@@ -11,19 +11,16 @@ async function main() {
     return;
   }
 
-  const existingAdmin = await prisma.user.findUnique({
-    where: { email: adminEmail },
-  });
-
-  if (existingAdmin) {
-    console.log('Admin user already exists. Skipping seed.');
-    return;
-  }
-
   const passwordHash = await argon2.hash(adminPassword);
 
-  await prisma.user.create({
-    data: {
+  const admin = await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {
+      passwordHash,
+      role: 'ADMIN',
+      isEmailVerified: true,
+    },
+    create: {
       email: adminEmail,
       passwordHash,
       role: 'ADMIN',
@@ -31,7 +28,7 @@ async function main() {
     },
   });
 
-  console.log(`Admin user created: ${adminEmail}`);
+  console.log(`Admin user seeded: ${admin.email}`);
 }
 
 main()

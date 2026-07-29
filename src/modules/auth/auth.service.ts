@@ -32,6 +32,7 @@ export class AuthService {
       data: {
         email: data.email,
         passwordHash,
+        isEmailVerified: process.env['NODE_ENV'] === 'development',
       },
     });
 
@@ -62,7 +63,7 @@ export class AuthService {
       throw new AppError('Invalid credentials', 401);
     }
 
-    if (!user.isEmailVerified) {
+    if (!user.isEmailVerified && process.env['NODE_ENV'] !== 'development') {
       throw new AppError('Please verify your email first', 403);
     }
 
