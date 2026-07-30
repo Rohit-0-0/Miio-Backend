@@ -15,6 +15,18 @@ export class PropertyController {
     });
   }
 
+  async getByIds(req: Request, res: Response) {
+    const idsString = req.query['ids'] as string;
+    const ids = idsString.split(',').map(id => id.trim()).filter(Boolean);
+    const properties = await this.service.getPropertiesByIds(ids);
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Properties retrieved successfully',
+      data: properties,
+    });
+  }
+
   async get(req: Request, res: Response) {
     const property = await this.service.getProperty(req.params['id'] as string);
     if (!property) {

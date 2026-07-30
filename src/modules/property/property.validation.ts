@@ -42,6 +42,14 @@ export const listPropertiesSchema = z.object({
   }),
 });
 
+export const getPropertiesByIdsSchema = z.object({
+  body: z.unknown().optional(),
+  params: z.object({}).optional(),
+  query: z.object({
+    ids: z.string().min(1),
+  }),
+});
+
 export const createPropertySchema = z.object({
   query: z.object({}).optional(),
   params: z.object({}).optional(),

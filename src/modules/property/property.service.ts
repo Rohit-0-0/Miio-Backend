@@ -25,6 +25,10 @@ export class PropertyService {
     return this.repo.findById(id);
   }
 
+  async getPropertiesByIds(ids: string[]) {
+    return this.repo.findByIds(ids);
+  }
+
   async getPropertyBySlug(slug: string) {
     return this.repo.findBySlug(slug);
   }

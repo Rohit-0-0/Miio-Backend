@@ -79,6 +79,16 @@ export class PropertyRepository {
     return sanityClient.fetch(query, { id });
   }
 
+  async findByIds(ids: string[]): Promise<PropertyDocument[]> {
+    if (!ids || ids.length === 0) return [];
+    const query = `*[_type == "${PROPERTY_DOCUMENT.TYPE}" && id in $ids && !defined(deletedAt)]`;
+    const properties: PropertyDocument[] = await sanityClient.fetch(query, { ids });
+    
+    // Preserve the exact order supplied in the ids array
+    const idMap = new Map(properties.map(p => [p.id, p]));
+    return ids.map(id => idMap.get(id)).filter((p): p is PropertyDocument => p !== undefined);
+  }
+
   async findBySlug(slug: string): Promise<PropertyDocument | null> {
     const query = `*[_type == "${PROPERTY_DOCUMENT.TYPE}" && slug == $slug && !defined(deletedAt)][0]`;
     return sanityClient.fetch(query, { slug });
