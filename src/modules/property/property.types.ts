@@ -28,12 +28,20 @@ export interface PropertyData {
   longDescription?: string;
 
   // Location
-  city?: string;
-  state?: string;
-  country?: string;
-  address?: string;
-  latitude?: number;
-  longitude?: number;
+  location?: {
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    postalCode?: string;
+    latitude: number;
+    longitude: number;
+    placeId?: string;
+    source: 'manual';
+    mapViewport?: {
+      zoom?: number;
+    };
+  };
 
   // Media
   gallery?: Image[];

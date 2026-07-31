@@ -35,12 +35,12 @@ export class PropertyRepository {
     }
 
     if (params.country) {
-      filters.push(`country == $country`);
+      filters.push(`(country == $country || location.country == $country)`);
       queryParams['country'] = params.country;
     }
 
     if (params.city) {
-      filters.push(`city == $city`);
+      filters.push(`(city == $city || location.city == $city)`);
       queryParams['city'] = params.city;
     }
 
@@ -49,13 +49,34 @@ export class PropertyRepository {
       filters.push(`(
         title match $searchMatch || 
         city match $searchMatch || 
+        location.city match $searchMatch ||
         country match $searchMatch || 
+        location.country match $searchMatch ||
         shortDescription match $searchMatch
       )`);
       queryParams['searchMatch'] = `*${searchTerms}*`;
     }
 
     return { filters, queryParams };
+  }
+
+  private mapDocument(doc: any): PropertyDocument | null {
+    if (!doc) return null;
+    
+    // Backwards compatibility for location
+    if (!doc.location && (doc.city || doc.state || doc.country || doc.address || doc.latitude || doc.longitude)) {
+      doc.location = {
+        address: doc.address || '',
+        city: doc.city || '',
+        state: doc.state || '',
+        country: doc.country || '',
+        latitude: doc.latitude || 0,
+        longitude: doc.longitude || 0,
+        source: 'manual',
+      };
+    }
+    
+    return doc;
   }
 
   async findAll(params: ListPropertyQuery): Promise<{ items: PropertyDocument[]; total: number }> {
@@ -71,12 +92,17 @@ export class PropertyRepository {
       "total": count(*[${filterString}])
     }`;
 
-    return sanityClient.fetch(query, { ...queryParams, start, end });
+    const result = await sanityClient.fetch(query, { ...queryParams, start, end });
+    if (result && result.items) {
+      result.items = result.items.map((item: any) => this.mapDocument(item));
+    }
+    return result;
   }
 
   async findById(id: string): Promise<PropertyDocument | null> {
     const query = `*[_type == "${PROPERTY_DOCUMENT.TYPE}" && id == $id && !defined(deletedAt)][0]`;
-    return sanityClient.fetch(query, { id });
+    const doc = await sanityClient.fetch(query, { id });
+    return this.mapDocument(doc);
   }
 
   async findByIds(ids: string[]): Promise<PropertyDocument[]> {
@@ -85,13 +111,14 @@ export class PropertyRepository {
     const properties: PropertyDocument[] = await sanityClient.fetch(query, { ids });
     
     // Preserve the exact order supplied in the ids array
-    const idMap = new Map(properties.map(p => [p.id, p]));
+    const idMap = new Map(properties.map(p => [p.id, this.mapDocument(p)]));
     return ids.map(id => idMap.get(id)).filter((p): p is PropertyDocument => p !== undefined);
   }
 
   async findBySlug(slug: string): Promise<PropertyDocument | null> {
     const query = `*[_type == "${PROPERTY_DOCUMENT.TYPE}" && slug == $slug && !defined(deletedAt)][0]`;
-    return sanityClient.fetch(query, { slug });
+    const doc = await sanityClient.fetch(query, { slug });
+    return this.mapDocument(doc);
   }
 
   async existsBySlug(slug: string, excludeId?: string): Promise<boolean> {

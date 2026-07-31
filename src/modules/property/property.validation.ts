@@ -60,12 +60,20 @@ export const createPropertySchema = z.object({
     slug: z.string().optional(),
     shortDescription: z.string().optional(),
     longDescription: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    country: z.string().optional(),
-    address: z.string().optional(),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
+    location: z.object({
+      address: z.string().min(1),
+      city: z.string().min(1),
+      state: z.string().min(1),
+      country: z.string().min(1),
+      postalCode: z.string().optional(),
+      latitude: z.number().min(-90).max(90),
+      longitude: z.number().min(-180).max(180),
+      placeId: z.string().optional(),
+      source: z.literal('manual').default('manual'),
+      mapViewport: z.object({
+        zoom: z.number().optional()
+      }).optional()
+    }).optional(),
     gallery: z.array(imageSchema).optional(),
     coverImageId: z.string().optional(),
     propertyType: z.nativeEnum(PROPERTY_TYPES),
