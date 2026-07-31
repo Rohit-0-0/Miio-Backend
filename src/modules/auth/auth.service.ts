@@ -72,6 +72,16 @@ export class AuthService {
       throw new AppError('Invalid credentials', 401);
     }
 
+    if (!user.isActive) {
+      throw new AppError('Account is disabled', 403);
+    }
+
+    // Update lastLoginAt
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() }
+    });
+
     const accessToken = generateAccessToken({ userId: user.id, role: user.role });
     const refreshToken = generateRefreshToken({ userId: user.id });
 
@@ -89,7 +99,11 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
+        displayName: user.displayName,
+        avatarUrl: user.avatarUrl,
         role: user.role,
+        isActive: user.isActive,
+        lastLoginAt: new Date(),
       },
     };
   }
@@ -213,7 +227,11 @@ export class AuthService {
       select: {
         id: true,
         email: true,
+        displayName: true,
+        avatarUrl: true,
         role: true,
+        isActive: true,
+        lastLoginAt: true,
       },
     });
 

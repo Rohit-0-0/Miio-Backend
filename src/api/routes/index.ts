@@ -9,6 +9,7 @@ import { dashboardRoutes } from '@/modules/dashboard';
 
 import homepageRouter from '@/modules/homepage/homepage.routes';
 import { authRoutes } from '@/modules/auth/auth.routes';
+import userRoutes from '@/modules/user/user.routes';
 
 import propertyRouter from '@/modules/property/property.routes';
 
@@ -29,6 +30,7 @@ router.get('/health', (_req, res) => {
 });
 
 router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
 router.use('/test', testRouter);
 router.use('/sanity', sanityRoutes);
 router.use('/about', aboutRoutes);
