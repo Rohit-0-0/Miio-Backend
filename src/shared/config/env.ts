@@ -18,6 +18,11 @@ const envSchema = z.object({
   SANITY_DATASET: z.string().default("production"),
   SANITY_API_VERSION: z.string().default("2025-01-01"),
   SANITY_TOKEN: z.string().optional(),
+  
+  RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
+  EMAIL_FROM: z.string().email("EMAIL_FROM must be a valid email"),
+  EMAIL_FROM_NAME: z.string().min(1, "EMAIL_FROM_NAME is required"),
+  APP_URL: z.string().url("APP_URL must be a valid URL"),
 });
 
 const parsed = envSchema.safeParse(process.env);

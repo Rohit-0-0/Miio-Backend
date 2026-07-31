@@ -15,6 +15,30 @@ import propertyRouter from '@/modules/property/property.routes';
 
 const router = Router();
 
+import { env } from '@/shared/config/env';
+import { emailService } from '@/services/email';
+
+if (env.NODE_ENV === 'development') {
+  router.post('/dev/test-email', async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ success: false, message: 'Email is required' });
+      }
+
+      const result = await emailService.sendWelcomeEmail(email, { name: 'Test User' });
+      
+      if (!result.success) {
+        return res.status(500).json({ success: false, message: 'Failed to send email' });
+      }
+
+      return res.status(200).json({ success: true, message: 'Test email sent successfully', data: result });
+    } catch (_error) {
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  });
+}
+
 router.use('/properties', propertyRouter);
 router.use('/homepage', homepageRouter);
 // router.use('/about', aboutRouter);
