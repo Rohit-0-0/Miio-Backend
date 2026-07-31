@@ -19,6 +19,12 @@ enum VerificationTokenType {
   RESET_PASSWORD
 }
 
+enum OtpPurpose {
+  VERIFY_EMAIL
+  PASSWORD_RESET
+  CHANGE_EMAIL
+}
+
 model User {
   id              String   @id @default(uuid())
   email           String   @unique
@@ -57,3 +63,17 @@ model VerificationToken {
 
   user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model EmailOtp {
+  id         String     @id @default(cuid())
+  email      String
+  purpose    OtpPurpose
+  otpHash    String
+  attempts   Int        @default(0)
+  expiresAt  DateTime
+  lastSentAt DateTime?
+  createdAt  DateTime   @default(now())
+
+  @@index([email, purpose])
+}
+

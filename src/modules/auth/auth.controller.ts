@@ -80,4 +80,9 @@ export class AuthController {
     const result = await this.service.verifyEmail(req.body);
     return ok(res, result, 'Email verified successfully');
   }
+
+  async resendVerificationOtp(req: Request, res: Response) {
+    const result = await this.service.resendVerificationOtp(req.body);
+    return ok(res, result, 'Verification OTP sent successfully');
+  }
 }

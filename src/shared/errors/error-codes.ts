@@ -10,6 +10,8 @@ export const ERROR_CODES = {
   FORBIDDEN: 'FORBIDDEN',
 
   CONFLICT: 'CONFLICT',
+
+  EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
 } as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];

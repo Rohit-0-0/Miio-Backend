@@ -7,7 +7,8 @@ import {
   loginSchema, 
   forgotPasswordSchema, 
   resetPasswordSchema, 
-  verifyEmailSchema 
+  verifyEmailSchema,
+  resendVerificationOtpSchema
 } from './auth.validation';
 
 const router = Router();
@@ -21,5 +22,6 @@ router.post('/refresh', controller.refresh.bind(controller));
 router.post('/forgot-password', validate(forgotPasswordSchema), controller.forgotPassword.bind(controller));
 router.post('/reset-password', validate(resetPasswordSchema), controller.resetPassword.bind(controller));
 router.post('/verify-email', validate(verifyEmailSchema), controller.verifyEmail.bind(controller));
+router.post('/resend-verification-otp', validate(resendVerificationOtpSchema), controller.resendVerificationOtp.bind(controller));
 
 export const authRoutes = router;

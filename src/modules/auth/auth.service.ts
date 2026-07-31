@@ -4,7 +4,8 @@ import type {
   LoginInput, 
   ForgotPasswordInput, 
   ResetPasswordInput, 
-  VerifyEmailInput 
+  VerifyEmailInput,
+  ResendVerificationOtpInput
 } from './auth.validation';
 import { AppError } from '@/shared/errors';
 import { 
@@ -13,8 +14,8 @@ import {
   generateAccessToken, 
   generateRefreshToken 
 } from '@/shared/utils/security';
-import { emailService } from '@/infrastructure/email/klaviyo';
-import crypto from 'crypto';
+import { emailService } from '@/services/email';
+import { otpService, OTP_CONFIG } from '@/modules/otp';
 
 export class AuthService {
   async register(data: RegisterInput) {
@@ -32,22 +33,22 @@ export class AuthService {
       data: {
         email: data.email,
         passwordHash,
-        isEmailVerified: process.env['NODE_ENV'] === 'development',
+        displayName: data.displayName,
+        isEmailVerified: false,
       },
     });
 
-    const verifyToken = crypto.randomBytes(32).toString('hex');
-    await prisma.verificationToken.create({
-      data: {
-        token: verifyToken,
-        userId: user.id,
-        type: 'VERIFY_EMAIL',
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-      },
+    const { otp } = await otpService.createOtp({
+      email: user.email,
+      purpose: 'VERIFY_EMAIL',
     });
 
     // Send verification email asynchronously
-    emailService.sendVerificationEmail(user.email, verifyToken).catch(console.error);
+    emailService.sendVerificationEmail(user.email, { 
+      name: user.displayName || user.email.split('@')[0] || 'User', 
+      otp, 
+      expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES 
+    }).catch(console.error);
 
     return {
       message: 'Registration successful. Please verify your email.',
@@ -63,8 +64,8 @@ export class AuthService {
       throw new AppError('Invalid credentials', 401);
     }
 
-    if (!user.isEmailVerified && process.env['NODE_ENV'] !== 'development') {
-      throw new AppError('Please verify your email first', 403);
+    if (!user.isEmailVerified) {
+      throw new AppError('Please verify your email first', 403, 'EMAIL_NOT_VERIFIED');
     }
 
     const isValid = await verifyPassword(user.passwordHash, data.password);
@@ -161,64 +162,98 @@ export class AuthService {
       return { message: 'If an account exists, a reset link has been sent.' };
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    await prisma.verificationToken.create({
-      data: {
-        token: resetToken,
-        userId: user.id,
-        type: 'RESET_PASSWORD',
-        expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000), // 1 hour
-      },
+    const { otp } = await otpService.createOtp({
+      email: user.email,
+      purpose: 'PASSWORD_RESET',
     });
 
-    emailService.sendPasswordResetEmail(user.email, resetToken).catch(console.error);
+    emailService.sendForgotPasswordEmail(user.email, { 
+      name: user.displayName || user.email.split('@')[0] || 'User', 
+      otp, 
+      expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES 
+    }).catch(console.error);
 
     return { message: 'If an account exists, a reset link has been sent.' };
   }
 
   async resetPassword(data: ResetPasswordInput) {
-    const tokenRecord = await prisma.verificationToken.findUnique({
-      where: { token: data.token },
-      include: { user: true },
+    const user = await prisma.user.findUnique({
+      where: { email: data.email },
     });
 
-    if (!tokenRecord || tokenRecord.type !== 'RESET_PASSWORD' || tokenRecord.expiresAt < new Date()) {
+    if (!user) {
+      // Avoid revealing user existence
       throw new AppError('Invalid or expired reset token', 400);
     }
+
+    await otpService.verifyOtp({
+      email: data.email,
+      purpose: 'PASSWORD_RESET',
+      otp: data.otp,
+    });
 
     const passwordHash = await hashPassword(data.password);
 
     await prisma.user.update({
-      where: { id: tokenRecord.userId },
+      where: { id: user.id },
       data: { passwordHash },
-    });
-
-    await prisma.verificationToken.deleteMany({
-      where: { userId: tokenRecord.userId, type: 'RESET_PASSWORD' },
     });
 
     return { message: 'Password has been reset successfully.' };
   }
 
   async verifyEmail(data: VerifyEmailInput) {
-    const tokenRecord = await prisma.verificationToken.findUnique({
-      where: { token: data.token },
+    const user = await prisma.user.findUnique({
+      where: { email: data.email },
     });
 
-    if (!tokenRecord || tokenRecord.type !== 'VERIFY_EMAIL' || tokenRecord.expiresAt < new Date()) {
-      throw new AppError('Invalid or expired verification token', 400);
+    if (!user) {
+      throw new AppError('User not found', 404);
     }
 
+    if (user.isEmailVerified) {
+      throw new AppError('Email is already verified', 400);
+    }
+
+    await otpService.verifyOtp({
+      email: data.email,
+      purpose: 'VERIFY_EMAIL',
+      otp: data.otp,
+    });
+
     await prisma.user.update({
-      where: { id: tokenRecord.userId },
+      where: { id: user.id },
       data: { isEmailVerified: true },
     });
 
-    await prisma.verificationToken.deleteMany({
-      where: { userId: tokenRecord.userId, type: 'VERIFY_EMAIL' },
+    return { message: 'Email successfully verified.' };
+  }
+
+  async resendVerificationOtp(data: ResendVerificationOtpInput) {
+    const user = await prisma.user.findUnique({
+      where: { email: data.email },
     });
 
-    return { message: 'Email successfully verified.' };
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    if (user.isEmailVerified) {
+      throw new AppError('Email is already verified', 400);
+    }
+
+    const { otp } = await otpService.createOtp({
+      email: user.email,
+      purpose: 'VERIFY_EMAIL',
+    });
+
+    emailService.sendVerificationEmail(user.email, { 
+      name: user.displayName || user.email.split('@')[0] || 'User', 
+      otp, 
+      expiryMinutes: OTP_CONFIG.EXPIRY_MINUTES 
+    }).catch(console.error);
+
+    return { message: 'Verification OTP sent successfully.' };
   }
 
   async getMe(userId: string) {
