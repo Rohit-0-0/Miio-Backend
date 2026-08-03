@@ -14,7 +14,8 @@ export const patchHeroSchema = z.object({
     eyebrow: z.string().optional(),
     title: z.string(),
     subtitle: z.string(),
-    backgroundImage: imageSchema,
+    heroImages: z.array(imageSchema).optional(),
+    backgroundImage: imageSchema.optional(),
     backgroundAlt: z.string().optional(),
     primaryCta: z.object({ label: z.string(), href: z.string() }),
     secondaryCta: z.object({ label: z.string(), href: z.string() }).optional(),
@@ -43,70 +44,62 @@ export const patchFeaturedPropertiesSchema = z.object({
   params: z.object({}).optional(),
 });
 
-export const patchWhyMiioSchema = z.object({
-  body: z.object({
-    title: z.string(),
-    subtitle: z.string().optional(),
-    content: z.string(),
-    image: imageSchema.optional(),
-    ctaLabel: z.string().optional(),
-    ctaLink: z.string().optional(),
-  }),
-  query: z.object({}).optional(),
-  params: z.object({}).optional(),
-});
-
-export const patchExperiencesSchema = z.object({
-  body: z.object({
-    title: z.string(),
-    subtitle: z.string().optional(),
-    items: z.array(z.object({
-      id: z.string(),
-      title: z.string(),
-      description: z.string(),
-      icon: imageSchema.optional(),
-    })),
-  }),
-  query: z.object({}).optional(),
-  params: z.object({}).optional(),
-});
-
-export const patchTestimonialsSchema = z.object({
-  body: z.object({
-    title: z.string(),
-    subtitle: z.string().optional(),
-    items: z.array(z.object({
-      id: z.string(),
-      customerName: z.string(),
-      location: z.string().optional(),
-      testimonial: z.string(),
-      rating: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
-      avatar: imageSchema.optional(),
-    })),
-  }),
-  query: z.object({}).optional(),
-  params: z.object({}).optional(),
-});
-
-export const patchFaqSchema = z.object({
-  body: z.object({
-    title: z.string(),
-    subtitle: z.string().optional(),
-    items: z.array(z.object({
-      id: z.string(),
-      question: z.string(),
-      answer: z.string(),
-    })),
-  }),
-  query: z.object({}).optional(),
-  params: z.object({}).optional(),
-});
-
-export const patchNewsletterSchema = z.object({
+export const patchEditorialStatementSchema = z.object({
   body: z.object({
     heading: z.string(),
     description: z.string(),
+  }),
+  query: z.object({}).optional(),
+  params: z.object({}).optional(),
+});
+
+export const patchLocationsSchema = z.object({
+  body: z.object({
+    heading: z.string(),
+    items: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      description: z.string(),
+      image: imageSchema.optional(),
+      displayOrder: z.number().optional(),
+    })),
+  }),
+  query: z.object({}).optional(),
+  params: z.object({}).optional(),
+});
+
+export const patchTrustSchema = z.object({
+  body: z.object({
+    heading: z.string(),
+    rating: z.string(),
+    reviewCount: z.string(),
+    verifiedText: z.string(),
+    items: z.array(z.object({
+      id: z.string(),
+      title: z.string(),
+      icon: z.string().optional(),
+    })),
+  }),
+  query: z.object({}).optional(),
+  params: z.object({}).optional(),
+});
+
+export const patchJournalSchema = z.object({
+  body: z.object({
+    heading: z.string(),
     ctaText: z.string(),
+    ctaLink: z.string(),
+  }),
+  query: z.object({}).optional(),
+  params: z.object({}).optional(),
+});
+
+export const patchFinalCtaSchema = z.object({
+  body: z.object({
+    heading: z.string(),
+    description: z.string().optional(),
+    buttonText: z.string(),
+    buttonLink: z.string(),
   }),
   query: z.object({}).optional(),
   params: z.object({}).optional(),

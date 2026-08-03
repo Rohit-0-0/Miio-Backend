@@ -9,7 +9,8 @@ export interface HeroSection extends SectionMetadata {
   eyebrow?: string;
   title: string;
   subtitle: string;
-  backgroundImage: Image;
+  heroImages?: Image[];
+  backgroundImage?: Image; // Legacy fallback
   backgroundAlt?: string;
   primaryCta: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
@@ -26,66 +27,59 @@ export interface FeaturedPropertiesSection extends SectionMetadata {
   subtitle?: string;
   description?: string;
   ctaLabel?: string;
+  ctaText?: string;
   ctaLink?: string;
   maxProperties?: number;
+  placeholderPrice?: string;
   displayMode: FeaturedPropertiesMode;
-  manualSelection?: string[]; // Array of property IDs
+  manualSelection?: string[]; // Legacy
+  featuredPropertyReferences?: string[];
   collectionId?: string; // For future
 }
 
-export interface WhyMiioSection extends SectionMetadata {
-  title: string;
-  subtitle?: string;
-  content: string; // rich text, starting as simple textarea
-  image?: Image;
-  ctaLabel?: string;
-  ctaLink?: string;
-}
-
-export interface ExperienceCard {
-  id: string;
-  title: string;
-  description: string;
-  icon?: Image;
-}
-
-export interface ExperiencesSection extends SectionMetadata {
-  title: string;
-  subtitle?: string;
-  items: ExperienceCard[];
-}
-
-export interface TestimonialItem {
-  id: string;
-  customerName: string;
-  location?: string;
-  testimonial: string;
-  rating: 1 | 2 | 3 | 4 | 5;
-  avatar?: Image;
-}
-
-export interface TestimonialsSection extends SectionMetadata {
-  title: string;
-  subtitle?: string;
-  items: TestimonialItem[];
-}
-
-export interface FaqItem {
-  id: string;
-  question: string;
-  answer: string;
-}
-
-export interface FaqSection extends SectionMetadata {
-  title: string;
-  subtitle?: string;
-  items: FaqItem[];
-}
-
-export interface NewsletterSection extends SectionMetadata {
+export interface EditorialStatementSection extends SectionMetadata {
   heading: string;
   description: string;
+}
+
+export interface LocationItem {
+  id: string;
+  name: string;
+  description: string;
+  image?: Image;
+  displayOrder?: number;
+}
+
+export interface LocationsSection extends SectionMetadata {
+  heading: string;
+  items: LocationItem[];
+}
+
+export interface TrustItem {
+  id: string;
+  title: string;
+  icon?: string;
+}
+
+export interface TrustSection extends SectionMetadata {
+  heading: string;
+  rating: string;
+  reviewCount: string;
+  verifiedText: string;
+  items: TrustItem[];
+}
+
+export interface JournalSection extends SectionMetadata {
+  heading: string;
   ctaText: string;
+  ctaLink: string;
+}
+
+export interface FinalCtaSection extends SectionMetadata {
+  heading: string;
+  description?: string;
+  buttonText: string;
+  buttonLink: string;
 }
 
 export interface SeoSection extends Seo, SectionMetadata {}
@@ -96,11 +90,12 @@ export interface HomepageData {
   
   hero: HeroSection;
   featuredProperties?: FeaturedPropertiesSection;
-  whyMiio?: WhyMiioSection;
-  experiences?: ExperiencesSection;
-  testimonials?: TestimonialsSection;
-  faq?: FaqSection;
-  newsletter?: NewsletterSection;
+  editorialStatement?: EditorialStatementSection;
+  locations?: LocationsSection;
+  trust?: TrustSection;
+  journal?: JournalSection;
+  finalCta?: FinalCtaSection;
+  
   seo?: SeoSection;
 }
 

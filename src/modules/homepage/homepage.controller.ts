@@ -25,29 +25,29 @@ export class HomepageController {
     return ok(res, doc, 'Featured Properties section updated successfully');
   }
 
-  async patchWhyMiio(req: Request, res: Response) {
-    const doc = await this.service.updateWhyMiio(req.body, this.getUpdatedBy(req));
-    return ok(res, doc, 'Why Miio section updated successfully');
+  async patchEditorialStatement(req: Request, res: Response) {
+    const doc = await this.service.updateEditorialStatement(req.body, this.getUpdatedBy(req));
+    return ok(res, doc, 'Editorial Statement section updated successfully');
   }
 
-  async patchExperiences(req: Request, res: Response) {
-    const doc = await this.service.updateExperiences(req.body, this.getUpdatedBy(req));
-    return ok(res, doc, 'Experiences section updated successfully');
+  async patchLocations(req: Request, res: Response) {
+    const doc = await this.service.updateLocations(req.body, this.getUpdatedBy(req));
+    return ok(res, doc, 'Locations section updated successfully');
   }
 
-  async patchTestimonials(req: Request, res: Response) {
-    const doc = await this.service.updateTestimonials(req.body, this.getUpdatedBy(req));
-    return ok(res, doc, 'Testimonials section updated successfully');
+  async patchTrust(req: Request, res: Response) {
+    const doc = await this.service.updateTrust(req.body, this.getUpdatedBy(req));
+    return ok(res, doc, 'Trust section updated successfully');
   }
 
-  async patchFaq(req: Request, res: Response) {
-    const doc = await this.service.updateFaq(req.body, this.getUpdatedBy(req));
-    return ok(res, doc, 'FAQ section updated successfully');
+  async patchJournal(req: Request, res: Response) {
+    const doc = await this.service.updateJournal(req.body, this.getUpdatedBy(req));
+    return ok(res, doc, 'Journal section updated successfully');
   }
 
-  async patchNewsletter(req: Request, res: Response) {
-    const doc = await this.service.updateNewsletter(req.body, this.getUpdatedBy(req));
-    return ok(res, doc, 'Newsletter section updated successfully');
+  async patchFinalCta(req: Request, res: Response) {
+    const doc = await this.service.updateFinalCta(req.body, this.getUpdatedBy(req));
+    return ok(res, doc, 'Final CTA section updated successfully');
   }
 
   async patchSeo(req: Request, res: Response) {

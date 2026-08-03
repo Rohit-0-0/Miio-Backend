@@ -5,11 +5,11 @@ import { asyncHandler } from '@/shared/middleware';
 import {
   patchHeroSchema,
   patchFeaturedPropertiesSchema,
-  patchWhyMiioSchema,
-  patchExperiencesSchema,
-  patchTestimonialsSchema,
-  patchFaqSchema,
-  patchNewsletterSchema,
+  patchEditorialStatementSchema,
+  patchLocationsSchema,
+  patchTrustSchema,
+  patchJournalSchema,
+  patchFinalCtaSchema,
   patchSeoSchema
 } from './homepage.validation';
 
@@ -20,11 +20,11 @@ router.get('/', asyncHandler(controller.get.bind(controller)));
 
 router.patch('/hero', validate(patchHeroSchema), asyncHandler(controller.patchHero.bind(controller)));
 router.patch('/featured-properties', validate(patchFeaturedPropertiesSchema), asyncHandler(controller.patchFeaturedProperties.bind(controller)));
-router.patch('/why-miio', validate(patchWhyMiioSchema), asyncHandler(controller.patchWhyMiio.bind(controller)));
-router.patch('/experiences', validate(patchExperiencesSchema), asyncHandler(controller.patchExperiences.bind(controller)));
-router.patch('/testimonials', validate(patchTestimonialsSchema), asyncHandler(controller.patchTestimonials.bind(controller)));
-router.patch('/faq', validate(patchFaqSchema), asyncHandler(controller.patchFaq.bind(controller)));
-router.patch('/newsletter', validate(patchNewsletterSchema), asyncHandler(controller.patchNewsletter.bind(controller)));
+router.patch('/editorial-statement', validate(patchEditorialStatementSchema), asyncHandler(controller.patchEditorialStatement.bind(controller)));
+router.patch('/locations', validate(patchLocationsSchema), asyncHandler(controller.patchLocations.bind(controller)));
+router.patch('/trust', validate(patchTrustSchema), asyncHandler(controller.patchTrust.bind(controller)));
+router.patch('/journal', validate(patchJournalSchema), asyncHandler(controller.patchJournal.bind(controller)));
+router.patch('/final-cta', validate(patchFinalCtaSchema), asyncHandler(controller.patchFinalCta.bind(controller)));
 router.patch('/seo', validate(patchSeoSchema), asyncHandler(controller.patchSeo.bind(controller)));
 
 export default router;
