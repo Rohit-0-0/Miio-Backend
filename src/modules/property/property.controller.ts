@@ -28,15 +28,23 @@ export class PropertyController {
   }
 
   async get(req: Request, res: Response) {
-    const property = await this.service.getProperty(req.params['id'] as string);
-    if (!property) {
-      return res.status(404).json({ success: false, message: 'Property not found' });
+    const id = req.params['id'] as string;
+    
+    // Admin / Database requests use internal ID (assuming UUID or custom ID, not Guesty 24-hex)
+    // But since Guesty ID is canonical, we'll try to fetch from Guesty.
+    // If it fails, we fall back to database to keep admin working if needed.
+    try {
+      if (/^[0-9a-fA-F]{24}$/.test(id)) {
+        const property = await this.service.getGuestyPropertyById(id);
+        if (property) {
+          return ok(res, property);
+        }
+      }
+    } catch (e) {
+      // Ignore guesty error and fallback
     }
-    return ok(res, property);
-  }
 
-  async getBySlug(req: Request, res: Response) {
-    const property = await this.service.getPropertyBySlug(req.params['slug'] as string);
+    const property = await this.service.getProperty(id);
     if (!property) {
       return res.status(404).json({ success: false, message: 'Property not found' });
     }

@@ -6,11 +6,14 @@ import type { PropertyData, PropertySummary } from './property.types';
 import { GuestyProvider } from '@/integrations/guesty';
 import { PropertyMapper } from './property.mapper';
 import { PropertyQueryMapper } from './property-query.mapper';
+import { PropertyDetailsMapper } from './property-details.mapper';
 
 export class PropertyService {
   private readonly repo = new PropertyRepository();
   private readonly editorialService = new PropertyEditorialService();
   private readonly guestyProvider = new GuestyProvider();
+  
+
 
   private async enrichWithEditorial(property: PropertyData | null): Promise<PropertyData | null> {
     if (!property) return null;
@@ -62,6 +65,14 @@ export class PropertyService {
   async getPropertyBySlug(slug: string) {
     const property = await this.repo.findBySlug(slug);
     return this.enrichWithEditorial(property);
+  }
+
+  async getGuestyPropertyById(id: string) {
+    // Fetch full details using the resolved ID
+    const detailsDto = await this.guestyProvider.getListingById(id);
+    
+    // Map to PropertyDetails
+    return PropertyDetailsMapper.toPropertyDetails(detailsDto);
   }
 
   async createProperty(data: CreatePropertyInput) {

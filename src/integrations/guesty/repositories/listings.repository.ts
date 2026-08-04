@@ -1,5 +1,6 @@
 import { GuestyClient } from '../client/guesty.client';
 import type { GuestyListingsQuery, GuestyListingsResponse } from '../dto/listing.dto';
+import type { GuestyListingDetailsDto } from '../dto/listing-details.dto';
 
 export class ListingsRepository {
   /**
@@ -14,6 +15,13 @@ export class ListingsRepository {
     const endpoint = `/v1/listings${queryString ? `?${queryString}` : ''}`;
     
     return GuestyClient.get<GuestyListingsResponse>(endpoint);
+  }
+
+  /**
+   * Retrieves a single listing from Guesty by ID
+   */
+  static async getListingById(id: string): Promise<GuestyListingDetailsDto> {
+    return GuestyClient.get<GuestyListingDetailsDto>(`/v1/listings/${id}`);
   }
 
   /**

@@ -14,7 +14,7 @@ export class TokenManager {
 
   private constructor() {
     // Automatically select storage based on environment
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       this.store = new FileTokenStore();
     } else {
       this.store = new MemoryTokenStore();
