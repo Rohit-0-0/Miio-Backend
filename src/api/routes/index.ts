@@ -6,6 +6,7 @@ import { partnerRoutes } from '@/modules/partner';
 import { journalRoutes } from '@/modules/journal';
 import { mediaRoutes } from '@/modules/media';
 import { dashboardRoutes } from '@/modules/dashboard';
+import { staysPageRoutes } from '@/modules/stays-page';
 
 import homepageRouter from '@/modules/homepage/homepage.routes';
 import { authRoutes } from '@/modules/auth/auth.routes';
@@ -62,5 +63,6 @@ router.use('/partner', partnerRoutes);
 router.use('/journal', journalRoutes);
 router.use('/media', mediaRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/stays-page', staysPageRoutes);
 
 export default router;
