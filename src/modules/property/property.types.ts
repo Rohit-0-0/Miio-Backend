@@ -1,5 +1,6 @@
 import type { LifecycleStatus, PropertyType, SyncProvider, SyncStatus } from './constants';
 import type { Image, Seo } from '@/types';
+import type { PropertyEditorialData } from './editorial/property-editorial.types';
 
 export interface Amenity {
   id: string;
@@ -80,6 +81,9 @@ export interface PropertyData {
 
   // Sync
   sync?: SyncMetadata;
+
+  // Editorial (Merged from CMS)
+  editorial?: PropertyEditorialData;
 
   // Soft Delete
   deletedAt?: string;
