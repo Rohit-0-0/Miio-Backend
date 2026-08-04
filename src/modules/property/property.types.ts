@@ -95,3 +95,27 @@ export interface PropertyDocument extends PropertyData {
   _createdAt: string;
   _updatedAt: string;
 }
+
+/**
+ * Lightweight model specifically for the Stays page list view.
+ * Contains only the fields required for the PropertyBrowseCard.
+ */
+export interface PropertySummary {
+  id: string;
+  title: string;
+  slug: string;
+  shortDescription?: string | undefined;
+  location: {
+    city: string;
+    state: string;
+    country: string;
+  };
+  gallery: Image[];
+  coverImageId?: string | undefined;
+  propertyType: string;
+  bedrooms: number;
+  bathrooms: number;
+  maxGuests: number;
+  beds: number;
+  amenities: Amenity[];
+}

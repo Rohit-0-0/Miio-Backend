@@ -2,11 +2,15 @@ import { PropertyRepository } from './property.repository';
 import type { CreatePropertyInput, ListPropertyQuery, UpdatePropertyInput } from './property.validation';
 import { generateBaseSlug } from '@/shared/utils';
 import { PropertyEditorialService } from './editorial/property-editorial.service';
-import type { PropertyData } from './property.types';
+import type { PropertyData, PropertySummary } from './property.types';
+import { GuestyProvider } from '@/integrations/guesty';
+import { PropertyMapper } from './property.mapper';
+import { PropertyQueryMapper } from './property-query.mapper';
 
 export class PropertyService {
   private readonly repo = new PropertyRepository();
   private readonly editorialService = new PropertyEditorialService();
+  private readonly guestyProvider = new GuestyProvider();
 
   private async enrichWithEditorial(property: PropertyData | null): Promise<PropertyData | null> {
     if (!property) return null;
@@ -22,19 +26,25 @@ export class PropertyService {
   }
 
   async getProperties(query: ListPropertyQuery) {
-    const result = await this.repo.findAll(query);
+    // 1. Translate domain query to Guesty API query
+    const guestyQuery = PropertyQueryMapper.toGuestyListingsQuery(query);
+    
+    // 2. Fetch raw DTOs via generic Provider
+    const response = await this.guestyProvider.getListings(guestyQuery);
+    
+    // 3. Map raw Guesty DTOs to internal PropertySummary model
+    const items: PropertySummary[] = response.results.map(dto => PropertyMapper.toPropertySummary(dto));
+    
     const page = query.page || 1;
     const limit = query.limit || 10;
-    
-    const items = await Promise.all(result.items.map(async p => await this.enrichWithEditorial(p) as PropertyData));
     
     return {
       data: items,
       pagination: {
         page,
         limit,
-        total: result.total,
-        totalPages: Math.ceil(result.total / limit),
+        total: response.count,
+        totalPages: Math.ceil(response.count / limit),
       },
     };
   }

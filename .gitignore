@@ -37,3 +37,9 @@ pnpm-debug.log*
 *.tmp
 *.temp
 /src/generated/prisma
+# Guesty development token cache
+.cache/
+
+# Ignore any cached JSON tokens
+.cache/*.json
+props.json
