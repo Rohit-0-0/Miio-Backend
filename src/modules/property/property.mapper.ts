@@ -22,6 +22,8 @@ export class PropertyMapper {
     return {
       id: dto._id,
       title: dto.title,
+      nickname: dto.nickname,
+      unitType: dto.type,
       slug: generateBaseSlug(dto.title),
       shortDescription: dto.publicDescription?.summary || undefined,
       location: {

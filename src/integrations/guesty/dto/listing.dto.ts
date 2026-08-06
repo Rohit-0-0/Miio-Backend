@@ -1,11 +1,19 @@
 export interface GuestyListingsQuery {
+  city?: string;
   limit?: number;
   skip?: number;
+  availability?: {
+    checkIn: string;
+    checkOut: string;
+    minOccupancy?: number;
+  };
 }
 
 export interface GuestyListingDto {
   _id: string;
   title: string;
+  nickname?: string;
+  type?: string;
   propertyType: string;
   roomType?: string;
   bedrooms: number;

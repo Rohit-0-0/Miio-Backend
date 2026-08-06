@@ -35,19 +35,26 @@ export class PropertyService {
     // 2. Fetch raw DTOs via generic Provider
     const response = await this.guestyProvider.getListings(guestyQuery);
     
-    // 3. Map raw Guesty DTOs to internal PropertySummary model
-    const items: PropertySummary[] = response.results.map(dto => PropertyMapper.toPropertySummary(dto));
+    let items: PropertySummary[] = response.results.map(dto => PropertyMapper.toPropertySummary(dto));
+    
+    if (query.guests) {
+      // Guesty's minOccupancy ensures the listing accommodates the guests,
+      // but we may optionally double-check locally if needed. The API handles it now.
+    }
     
     const page = query.page || 1;
     const limit = query.limit || 10;
     
+    // The total is now accurately provided by Guesty's native availability search
+    const totalCount = response.count;
+
     return {
       data: items,
       pagination: {
         page,
         limit,
-        total: response.count,
-        totalPages: Math.ceil(response.count / limit),
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
       },
     };
   }

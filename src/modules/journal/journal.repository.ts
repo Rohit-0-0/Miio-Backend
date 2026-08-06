@@ -13,7 +13,7 @@ const SORT_FIELDS = {
 
 export class JournalRepository {
   private buildFilters(params: ListJournalQuery): { filters: string[], queryParams: Record<string, unknown> } {
-    const filters = [`_type == "${JOURNAL_DOCUMENT.TYPE}"`];
+    const filters = [`_type == "${JOURNAL_DOCUMENT.TYPE}" && !(_id in path("drafts.**"))`];
     const queryParams: Record<string, unknown> = {};
 
     if (params.category) {
@@ -21,10 +21,7 @@ export class JournalRepository {
       queryParams['category'] = params.category;
     }
 
-    if (params.status) {
-      filters.push(`status == $status`);
-      queryParams['status'] = params.status;
-    }
+    // status is handled by Sanity drafts logic natively
 
     if (params.featured !== undefined) {
       filters.push(`featured == $featured`);
@@ -70,22 +67,22 @@ export class JournalRepository {
   }
 
   async findById(id: string): Promise<JournalDocument | null> {
-    const query = `*[_type == "${JOURNAL_DOCUMENT.TYPE}" && _id == $id][0]`;
+    const query = `*[_type == "${JOURNAL_DOCUMENT.TYPE}" && !(_id in path("drafts.**")) && _id == $id][0]`;
     return sanityClient.fetch(query, { id });
   }
 
   async findBySlug(slug: string): Promise<JournalDocument | null> {
-    const query = `*[_type == "${JOURNAL_DOCUMENT.TYPE}" && slug == $slug][0]`;
+    const query = `*[_type == "${JOURNAL_DOCUMENT.TYPE}" && !(_id in path("drafts.**")) && slug.current == $slug][0]`;
     return sanityClient.fetch(query, { slug });
   }
 
   async existsBySlug(slug: string): Promise<boolean> {
-    const query = `count(*[_type == "${JOURNAL_DOCUMENT.TYPE}" && slug == $slug]) > 0`;
+    const query = `count(*[_type == "${JOURNAL_DOCUMENT.TYPE}" && !(_id in path("drafts.**")) && slug.current == $slug]) > 0`;
     return sanityClient.fetch(query, { slug });
   }
 
   async existsByTitle(title: string): Promise<boolean> {
-    const query = `count(*[_type == "${JOURNAL_DOCUMENT.TYPE}" && lower(title) == $title]) > 0`;
+    const query = `count(*[_type == "${JOURNAL_DOCUMENT.TYPE}" && !(_id in path("drafts.**")) && lower(title) == $title]) > 0`;
     return sanityClient.fetch(query, { title: title.toLowerCase() });
   }
 

@@ -10,6 +10,14 @@ export class ListingsRepository {
     const params = new URLSearchParams();
     if (query.limit !== undefined) params.append('limit', query.limit.toString());
     if (query.skip !== undefined) params.append('skip', query.skip.toString());
+    
+    if (query.availability) {
+      params.append('available', JSON.stringify(query.availability));
+    }
+    
+    if (query.city) {
+      params.append('city', query.city);
+    }
 
     const queryString = params.toString();
     const endpoint = `/v1/listings${queryString ? `?${queryString}` : ''}`;

@@ -39,6 +39,9 @@ export const listPropertiesSchema = z.object({
     featured: z.preprocess((val) => val === 'true' || val === true, z.boolean()).optional(),
     country: z.string().optional(),
     city: z.string().optional(),
+    checkIn: z.string().optional(),
+    checkOut: z.string().optional(),
+    guests: z.coerce.number().optional(),
   }),
 });
 

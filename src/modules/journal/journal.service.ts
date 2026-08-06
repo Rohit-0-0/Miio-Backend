@@ -2,6 +2,7 @@ import { AppError } from '@/shared/errors';
 import { generateUniqueSlug, buildPagination } from '@/shared/utils';
 
 import { JournalRepository } from './journal.repository';
+import { JournalMapper } from './journal.mapper';
 import type { JournalDocument } from './journal.types';
 import type { CreateJournalInput, UpdateJournalInput, ListJournalQuery } from './journal.validation';
 import { READING_TIME_WPM } from './constants';
@@ -53,7 +54,7 @@ export class JournalService {
     const { items, total } = await this.repository.findAll(query);
     const pagination = buildPagination(total, query);
 
-    return { data: items, pagination };
+    return { data: items.map(item => JournalMapper.toDto(item)), pagination };
   }
 
   async getJournalById(id: string): Promise<JournalDocument> {
@@ -61,7 +62,7 @@ export class JournalService {
     if (!journal) {
       throw new AppError('Journal article not found', 404, 'RESOURCE_NOT_FOUND');
     }
-    return journal;
+    return JournalMapper.toDto(journal);
   }
 
   async getJournalBySlug(slug: string): Promise<JournalDocument> {
@@ -69,7 +70,7 @@ export class JournalService {
     if (!journal) {
       throw new AppError('Journal article not found', 404, 'RESOURCE_NOT_FOUND');
     }
-    return journal;
+    return JournalMapper.toDto(journal);
   }
 
   async deleteJournal(id: string): Promise<void> {

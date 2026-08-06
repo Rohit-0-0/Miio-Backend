@@ -24,6 +24,8 @@ export interface PropertyData {
 
   // General
   title: string;
+  nickname?: string;
+  unitType?: string;
   slug: string;
   shortDescription?: string;
   longDescription?: string;
@@ -103,6 +105,8 @@ export interface PropertyDocument extends PropertyData {
 export interface PropertySummary {
   id: string;
   title: string;
+  nickname?: string | undefined;
+  unitType?: string | undefined;
   slug: string;
   shortDescription?: string | undefined;
   location: {

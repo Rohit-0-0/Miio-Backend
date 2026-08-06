@@ -8,9 +8,20 @@ export class PropertyQueryMapper {
     const page = query.page || 1;
     const skip = (page - 1) * limit;
 
-    return {
+    const guestyQuery: GuestyListingsQuery = {
       limit,
-      skip
+      skip,
+      ...(query.city && { city: query.city }),
     };
+
+    if (query.checkIn && query.checkOut) {
+      guestyQuery.availability = {
+        checkIn: query.checkIn,
+        checkOut: query.checkOut,
+        ...(query.guests ? { minOccupancy: query.guests } : {})
+      };
+    }
+
+    return guestyQuery;
   }
 }

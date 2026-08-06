@@ -9,8 +9,7 @@ export interface HeroSection extends SectionMetadata {
   eyebrow?: string;
   title: string;
   subtitle: string;
-  heroImages?: Image[];
-  backgroundImage?: Image; // Legacy fallback
+  images?: Image[];
   backgroundAlt?: string;
   primaryCta: { label: string; href: string };
   secondaryCta?: { label: string; href: string };

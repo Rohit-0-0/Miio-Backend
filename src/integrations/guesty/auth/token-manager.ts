@@ -40,7 +40,7 @@ export class TokenManager {
     const now = Date.now();
 
     if (data && data.accessToken && data.expiresAt && data.expiresAt > now + fiveMinutes) {
-      console.log('[Guesty Integration] Using cached token.');
+      console.log('[Guesty Integration] Using cached token.', data.accessToken);
       return data.accessToken;
     }
 
