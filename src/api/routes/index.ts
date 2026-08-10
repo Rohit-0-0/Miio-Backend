@@ -66,5 +66,7 @@ router.use('/journal', journalRoutes);
 router.use('/media', mediaRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/stays-page', staysPageRoutes);
+import bookingRouter from '@/modules/booking/booking.routes';
+router.use('/booking', bookingRouter);
 
 export default router;

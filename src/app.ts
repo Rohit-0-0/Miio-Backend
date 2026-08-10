@@ -12,12 +12,14 @@ import cookieParser from 'cookie-parser';
 const app = express();
 
 // Security
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // CORS
 app.use(cors({
   credentials: true,
-  origin: env.NEXT_PUBLIC_APP_URL,
+  origin: true,
 }));
 
 // Compression
