@@ -26,9 +26,31 @@ router.post('/quotes', asyncHandler(async (req: Request, res: Response) => {
   res.json({ success: true, data: quote });
 }));
 
-router.post('/reservations', asyncHandler(async (req: Request, res: Response) => {
-  const { quoteId, guest, ratePlanId } = req.body;
-  const reservation = await BookingEngineService.createReservation(quoteId, guest, ratePlanId);
+router.post('/instant', asyncHandler(async (req: Request, res: Response) => {
+  const { quoteId, ratePlanId, paymentToken, guest } = req.body;
+  
+  if (!quoteId || !ratePlanId || !paymentToken || !guest || !guest.firstName || !guest.lastName || !guest.email) {
+    res.status(400).json({ success: false, error: 'Missing required fields for instant booking.' });
+    return;
+  }
+
+  const mode = process.env['GUESTY_BOOKING_MODE'] || 'disabled';
+  
+  if (mode === 'disabled') {
+    // Return a mocked success response to test the UI flow without hitting Guesty
+    console.log(`[Instant Booking] Sandbox mode is disabled. Intercepting request and returning mock confirmation.`);
+    res.json({ 
+      success: true, 
+      isMocked: true,
+      data: { 
+        confirmationCode: 'GY-MOCK-1234',
+        status: 'confirmed'
+      } 
+    });
+    return;
+  }
+
+  const reservation = await BookingEngineService.createInstantBooking(quoteId, ratePlanId, guest, paymentToken);
   res.json({ success: true, data: reservation });
 }));
 
