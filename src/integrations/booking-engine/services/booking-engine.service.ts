@@ -59,49 +59,6 @@ export class BookingEngineService {
     return BookingEngineClient.post<QuoteResponse>('/api/reservations/quotes', params);
   }
 
-  static async createInstantBooking(
-    quoteId: string, 
-    ratePlanId: string, 
-    guestDetails: { firstName: string, lastName: string, email: string, phone: string }, 
-    paymentToken: string
-  ): Promise<any> {
-    console.log(`[Instant Booking] Incoming request`);
-    console.log(`[Instant Booking] Quote validation: ${quoteId}, ratePlan: ${ratePlanId}`);
-    
-    // Validate that the rate plan exists on the quote first
-    try {
-      const quote = await BookingEngineClient.get<any>(`/api/reservations/quotes/${quoteId}`);
-      const availableRatePlans = quote.rates?.ratePlans || [];
-      const validRatePlanIds = availableRatePlans.map((rp: any) => rp.ratePlan?._id);
-      
-      if (!validRatePlanIds.includes(ratePlanId)) {
-        throw new Error('Selected rate plan is no longer valid. Please refresh the price and try again.');
-      }
-    } catch (e: any) {
-      if (e.message?.includes('no longer valid')) throw e;
-      console.warn(`[Instant Booking] Failed to pre-validate quote ${quoteId}: ${e.message}`);
-      throw new Error('Selected rate plan is no longer valid. Please refresh the price and try again.');
-    }
-
-    console.log(`[Instant Booking] Payment token received`);
-    console.log(`[Instant Booking] Calling Guesty`);
-    
-    try {
-      const response = await BookingEngineClient.post<any>(`/api/reservations/quotes/${quoteId}/instant`, {
-        ratePlanId,
-        ccToken: paymentToken,
-        guest: guestDetails,
-        policy: { acceptPolicies: true }
-      });
-      
-      console.log(`[Instant Booking] Guesty response: SUCCESS`);
-      return response;
-    } catch (e: any) {
-      console.log(`[Instant Booking] Guesty response: FAILED`);
-      throw e;
-    }
-  }
-
   /**
    * Search available properties for a date range and occupancy
    */
