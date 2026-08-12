@@ -51,10 +51,10 @@ router.get('/payment-provider/:listingId', asyncHandler(async (req: Request, res
   }
 }));
 
-router.post('/instant', asyncHandler(async (req: Request, res: Response) => {
-  const { quoteId, ratePlanId, paymentToken, provider, guest, acceptPolicies } = req.body;
+router.post('/instant-charge', asyncHandler(async (req: Request, res: Response) => {
+  const { quoteId, ratePlanId, confirmationToken, provider, guest, acceptPolicies } = req.body;
   
-  console.log(`[Payment Verification]\nInstant booking request received\nquoteIdPresent: ${!!quoteId}\nratePlanIdPresent: ${!!ratePlanId}\npaymentTokenPresent: ${!!paymentToken}\nguestPresent: ${!!guest}\nacceptPolicies: ${acceptPolicies === true}`);
+  console.log(`[Payment Verification]\nInstant booking request received\nquoteIdPresent: ${!!quoteId}\nratePlanIdPresent: ${!!ratePlanId}\nconfirmationTokenPresent: ${!!confirmationToken}\nguestPresent: ${!!guest}\nacceptPolicies: ${acceptPolicies === true}`);
   console.log(`[Payment Verification]\nrawCardNumberReceived: ${!!req.body.cardNumber || !!req.body.number}\nrawCvcReceived: ${!!req.body.cvc}\nrawExpiryReceived: ${!!req.body.expiry}`);
 
   if (req.body.cardNumber || req.body.number || req.body.cvc) {
@@ -63,7 +63,7 @@ router.post('/instant', asyncHandler(async (req: Request, res: Response) => {
     return;
   }
   
-  if (!quoteId || !ratePlanId || !paymentToken || !guest || !guest.firstName || !guest.lastName || !guest.email) {
+  if (!quoteId || !ratePlanId || !confirmationToken || !guest || !guest.firstName || !guest.lastName || !guest.email) {
     res.status(400).json({ success: false, error: 'Missing required fields for instant booking.' });
     return;
   }
@@ -73,22 +73,34 @@ router.post('/instant', asyncHandler(async (req: Request, res: Response) => {
   try {
     console.log(`[Payment Verification]\nGuesty quote response received`);
     quote = await BookingEngineClient.get(`/api/reservations/quotes/${quoteId}`);
+    console.log(`[Payment Verification] Quote validation debug\n` +
+      `quoteId: ${quote?._id || quote?.id}\n` +
+      `quoteFound: ${!!quote}\n` +
+      `quoteStatus: ${quote?.status || quote?.data?.status}\n` +
+      `quoteStatusValid: ${quote?.status === 'valid' || quote?.data?.status === 'valid'}\n` +
+      `expiresAt: ${quote?.expiresAt || quote?.data?.expiresAt}\n` +
+      `currentTime: ${new Date().toISOString()}\n` +
+      `quoteExpired: ${quote?.status === 'expired' || quote?.data?.status === 'expired' || ((quote?.expiresAt || quote?.data?.expiresAt) && new Date(quote?.expiresAt || quote?.data?.expiresAt).getTime() < Date.now())}\n` +
+      `ratePlansPresent: ${!!(quote?.rates?.ratePlans || quote?.data?.rates?.ratePlans)}\n` +
+      `requestedRatePlanId: ${ratePlanId}\n` +
+      `matchingRatePlanFound: ${((quote?.rates?.ratePlans || quote?.data?.rates?.ratePlans) || []).some((rp: any) => rp.ratePlan?._id === ratePlanId)}`
+    );
+
+    const actualQuote = quote.data || quote;
     
-    console.log(`[Payment Verification]\nquoteFound: true\nquoteId: ${quote._id || quote.id}\nquoteStatus: ${quote.status}\ncreatedAt: ${quote.createdAt}\nexpiresAt: ${quote.expiresAt}\ncurrentTime: ${new Date().toISOString()}\nquoteExpired: ${quote.status === 'expired' || (quote.expiresAt && new Date(quote.expiresAt).getTime() < Date.now())}`);
-    
-    if (quote?.status !== 'valid' && quote?.status !== 'expired') {
+    if (actualQuote?.status !== 'valid' && actualQuote?.status !== 'expired') {
       res.status(400).json({ success: false, errorCode: 'INVALID_QUOTE', error: 'The price quote is not valid.' });
       return;
     }
     
-    if (quote?.status === 'expired' || (quote?.expiresAt && new Date(quote.expiresAt).getTime() < Date.now())) {
+    if (actualQuote?.status === 'expired' || (actualQuote?.expiresAt && new Date(actualQuote.expiresAt).getTime() < Date.now())) {
       res.status(400).json({ success: false, errorCode: 'QUOTE_EXPIRED', error: 'Your price quote has expired. Refreshing the price...' });
       return;
     }
 
-    const availableRatePlans = quote.rates?.ratePlans || [];
+    const availableRatePlans = actualQuote.rates?.ratePlans || [];
     const validRatePlanIds = availableRatePlans.map((rp: any) => rp.ratePlan?._id);
-    console.log(`[Payment Verification]\nratePlanFound: true\nratePlanId: ${ratePlanId}\namount: ${quote.rates?.ratePlans?.[0]?.ratePlan?.money?.subTotalPrice}\ncurrency: ${quote.rates?.ratePlans?.[0]?.ratePlan?.money?.currency}`);
+    console.log(`[Payment Verification]\nratePlanFound: true\nratePlanId: ${ratePlanId}\namount: ${actualQuote.rates?.ratePlans?.[0]?.ratePlan?.money?.subTotalPrice}\ncurrency: ${actualQuote.rates?.ratePlans?.[0]?.ratePlan?.money?.currency}`);
     if (!validRatePlanIds.includes(ratePlanId)) {
       res.status(400).json({ success: false, errorCode: 'INVALID_RATE_PLAN', error: 'Selected rate plan is no longer valid. Please refresh the price and try again.' });
       return;
@@ -107,7 +119,7 @@ router.post('/instant', asyncHandler(async (req: Request, res: Response) => {
   let actualProviderType = 'unsupported';
   let providerAccountId = null;
   try {
-    const listingId = quote.listingId;
+    const listingId = quote.data ? quote.data.listingId : quote.listingId;
     const providerResponse = await BookingEngineClient.get<any>(`/api/listings/${listingId}/payment-provider`);
     const rawType = (providerResponse.providerType || '').toLowerCase();
     
@@ -134,7 +146,8 @@ router.post('/instant', asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  const money = quote.rates.ratePlans[0].ratePlan.money;
+  const actualQuote = quote.data || quote;
+  const money = actualQuote.rates.ratePlans[0].ratePlan.money;
 
   const payload: any = {
     ratePlanId,
@@ -143,7 +156,7 @@ router.post('/instant', asyncHandler(async (req: Request, res: Response) => {
   };
 
   if (actualProviderType === 'stripe') {
-    payload.ccToken = paymentToken;
+    payload.ccToken = confirmationToken;
   }
 
   console.log(`[Payment Verification]\nGuesty Instant Booking payload prepared\nquoteId: ${quoteId}\nratePlanId: ${ratePlanId}\nccTokenPresent: ${!!payload.ccToken}\nguest.firstNamePresent: ${!!guest.firstName}\nguest.lastNamePresent: ${!!guest.lastName}\nguest.emailPresent: ${!!guest.email}\nguest.phonePresent: ${!!guest.phone}\npolicy.acceptPolicies: ${payload.policy.acceptPolicies}\npayloadReady: true`);

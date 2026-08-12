@@ -43,3 +43,4 @@ pnpm-debug.log*
 # Ignore any cached JSON tokens
 .cache/*.json
 props.json
+.guesty-be-token.json
