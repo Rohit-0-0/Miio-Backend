@@ -47,6 +47,7 @@ export interface SearchListingsRequest {
   children?: number | undefined;
   infants?: number | undefined;
   pets?: number | undefined;
+  city?: string | undefined;
 }
 
 export class BookingEngineService {
@@ -77,6 +78,11 @@ export class BookingEngineService {
     const queryParams = new URLSearchParams();
     if (params.checkIn) queryParams.append('checkIn', params.checkIn);
     if (params.checkOut) queryParams.append('checkOut', params.checkOut);
+    if (params.city) {
+      queryParams.append('city', params.city);
+      // Guesty requires country if city is provided
+      queryParams.append('country', 'Australia');
+    }
     
     // Map distinct guest counts to Guesty's minOccupancy and boolean flags
     const adults = params.adults || 1;

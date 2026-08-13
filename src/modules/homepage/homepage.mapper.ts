@@ -25,8 +25,9 @@ export class HomepageMapper {
         title: sanityHome?.featuredEditorial?.heading || '',
         ctaText: sanityHome?.featuredEditorial?.cta?.text || '',
         ctaLink: sanityHome?.featuredEditorial?.cta?.href || '',
-        displayMode: 'LATEST' as FeaturedPropertiesMode,
-        maxProperties: 3,
+        displayMode: sanityHome?.featuredEditorial?.displayMode || ('LATEST' as FeaturedPropertiesMode),
+        maxProperties: sanityHome?.featuredEditorial?.maxProperties || 3,
+        manualSelection: (sanityHome?.featuredEditorial?.manualSelection || []).map((ref: any) => ref?.guestyListingId || ref?._ref || ''),
       },
       editorialStatement: {
         heading: sanityHome?.featuredEditorial?.sideCardTitle || '',

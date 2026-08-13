@@ -12,6 +12,7 @@ import homepageRouter from '@/modules/homepage/homepage.routes';
 import { authRoutes } from '@/modules/auth/auth.routes';
 import userRoutes from '@/modules/user/user.routes';
 import { editorialRoutes } from '@/modules/editorial';
+import partnerWithUsRoutes from '@/modules/partner-with-us/partner-with-us.routes';
 
 import propertyRouter from '@/modules/property/property.routes';
 
@@ -62,6 +63,7 @@ router.use('/sanity', sanityRoutes);
 router.use('/about', aboutRoutes);
 router.use('/editorial', editorialRoutes);
 router.use('/partner', partnerRoutes);
+router.use('/partner-with-us', partnerWithUsRoutes);
 router.use('/journal', journalRoutes);
 router.use('/media', mediaRoutes);
 router.use('/dashboard', dashboardRoutes);

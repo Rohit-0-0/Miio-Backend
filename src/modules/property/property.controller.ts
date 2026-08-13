@@ -51,6 +51,16 @@ export class PropertyController {
     return ok(res, property);
   }
 
+  async getBySlug(req: Request, res: Response) {
+    const slug = req.params['slug'] as string;
+    const property = await this.service.getPropertyBySlug(slug);
+    
+    if (!property) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+    return ok(res, property);
+  }
+
   async create(req: Request, res: Response) {
     const property = await this.service.createProperty(req.body);
     return created(res, property, 'Property created successfully');

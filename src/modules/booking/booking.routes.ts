@@ -15,6 +15,7 @@ router.get('/search', asyncHandler(async (req: Request, res: Response) => {
     children: req.query['children'] ? parseInt(req.query['children'] as string, 10) : undefined,
     infants: req.query['infants'] ? parseInt(req.query['infants'] as string, 10) : undefined,
     pets: req.query['pets'] ? parseInt(req.query['pets'] as string, 10) : undefined,
+    city: req.query['city'] as string | undefined,
   };
 
   const listings = await BookingEngineService.searchListings(params);

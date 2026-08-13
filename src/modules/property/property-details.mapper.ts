@@ -37,7 +37,9 @@ export class PropertyDetailsMapper {
       location: {
         city: dto.address?.city || '',
         state: dto.address?.state || '',
-        country: dto.address?.country || ''
+        country: dto.address?.country || '',
+        ...(dto.address?.lat !== undefined ? { latitude: dto.address.lat } : {}),
+        ...(dto.address?.lng !== undefined ? { longitude: dto.address.lng } : {})
       },
       gallery,
       coverImageId,

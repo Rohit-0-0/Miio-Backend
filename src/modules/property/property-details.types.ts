@@ -11,6 +11,8 @@ export interface PropertyDetails {
     city: string;
     state: string;
     country: string;
+    latitude?: number;
+    longitude?: number;
   };
   gallery: Image[];
   coverImageId?: string | undefined;
