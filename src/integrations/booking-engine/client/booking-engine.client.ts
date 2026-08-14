@@ -51,12 +51,19 @@ export class BookingEngineClient {
         }
         
         // Create a structured error to pass to the frontend
-        let message = typeof errorData === 'object' && errorData.message 
-          ? errorData.message 
-          : 'Booking Engine API request failed.';
+        let message = 'Booking Engine API request failed.';
+        if (typeof errorData === 'object' && errorData !== null) {
+          if (errorData.message) {
+            message = errorData.message;
+          } else if (errorData.error?.message) {
+            message = errorData.error.message;
+          }
+        }
           
-        if (message.includes('checkIn') && message.includes('invalid')) {
+        if (message.toLowerCase().includes('checkin') && message.toLowerCase().includes('invalid')) {
           message = 'Please select a future check-in date.';
+        } else if (errorData?.error?.code === 'LISTING_IS_NOT_AVAILABLE') {
+          message = 'Sorry, these dates are unavailable or do not meet the minimum stay requirements.';
         }
           
         const code = typeof errorData === 'object' && errorData.code ? errorData.code : 'GUESTY_API_ERROR';
