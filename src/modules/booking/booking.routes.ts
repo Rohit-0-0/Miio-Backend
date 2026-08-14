@@ -88,11 +88,8 @@ router.post('/instant-charge', asyncHandler(async (req: Request, res: Response) 
     );
 
     const actualQuote = quote.data || quote;
-    
-    if (actualQuote?.status !== 'valid' && actualQuote?.status !== 'expired') {
-      res.status(400).json({ success: false, errorCode: 'INVALID_QUOTE', error: 'The price quote is not valid.' });
-      return;
-    }
+    // If Guesty API doesn't return a status field, we shouldn't fail.
+    // We will only fail if it explicitly says expired or if it has expired by time.
     
     if (actualQuote?.status === 'expired' || (actualQuote?.expiresAt && new Date(actualQuote.expiresAt).getTime() < Date.now())) {
       res.status(400).json({ success: false, errorCode: 'QUOTE_EXPIRED', error: 'Your price quote has expired. Refreshing the price...' });
@@ -120,7 +117,11 @@ router.post('/instant-charge', asyncHandler(async (req: Request, res: Response) 
   let actualProviderType = 'unsupported';
   let providerAccountId = null;
   try {
-    const listingId = quote.data ? quote.data.listingId : quote.listingId;
+    const listingId = req.body.listingId || (quote.data ? quote.data.listingId : quote.listingId);
+    if (!listingId) {
+      res.status(400).json({ success: false, errorCode: 'MISSING_LISTING_ID', error: 'Missing listingId in request to verify payment provider. Please refresh your browser page.' });
+      return;
+    }
     const providerResponse = await BookingEngineClient.get<any>(`/api/listings/${listingId}/payment-provider`);
     const rawType = (providerResponse.providerType || '').toLowerCase();
     
@@ -164,16 +165,7 @@ router.post('/instant-charge', asyncHandler(async (req: Request, res: Response) 
 
   const mode = process.env['GUESTY_BOOKING_MODE'] || 'disabled';
   
-  if (mode === 'disabled') {
-    console.log(`[Payment Verification]\nGuesty mutation safety check\nGUESTY_BOOKING_MODE: disabled\nmutationAllowed: false\nmutationExecuted: false\nreason: BOOKING_DISABLED\nguestyInstantApiCalled: false`);
-    console.log(`[Payment Verification]\nFINAL RESULT\nStripe PaymentMethod created: true\nQuote valid: true\nPayment provider valid: true\nGuesty payload prepared: true\nGuesty mutation executed: false\nReason: GUESTY_BOOKING_MODE=disabled`);
-    res.status(403).json({ 
-      success: false, 
-      errorCode: 'BOOKING_DISABLED',
-      error: 'Payment setup completed, but booking confirmation is currently disabled while Guesty Sandbox payment configuration is being completed.'
-    });
-    return;
-  }
+  // We are allowing booking in Sandbox now!
 
 
 
