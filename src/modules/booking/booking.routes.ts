@@ -16,6 +16,12 @@ router.get('/search', asyncHandler(async (req: Request, res: Response) => {
     infants: req.query['infants'] ? parseInt(req.query['infants'] as string, 10) : undefined,
     pets: req.query['pets'] ? parseInt(req.query['pets'] as string, 10) : undefined,
     city: req.query['city'] as string | undefined,
+    minPrice: req.query['minPrice'] ? parseInt(req.query['minPrice'] as string, 10) : undefined,
+    maxPrice: req.query['maxPrice'] ? parseInt(req.query['maxPrice'] as string, 10) : undefined,
+    propertyType: req.query['propertyType'] as string | undefined,
+    amenities: req.query['amenities'] ? (req.query['amenities'] as string).split(',') : undefined,
+    minBedrooms: req.query['minBedrooms'] ? parseInt(req.query['minBedrooms'] as string, 10) : undefined,
+    minBathrooms: req.query['minBathrooms'] ? parseInt(req.query['minBathrooms'] as string, 10) : undefined,
   };
 
   const listings = await BookingEngineService.searchListings(params);

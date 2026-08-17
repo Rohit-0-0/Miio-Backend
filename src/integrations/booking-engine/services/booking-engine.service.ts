@@ -48,6 +48,12 @@ export interface SearchListingsRequest {
   infants?: number | undefined;
   pets?: number | undefined;
   city?: string | undefined;
+  minPrice?: number | undefined;
+  maxPrice?: number | undefined;
+  propertyType?: string | undefined;
+  amenities?: string[] | undefined;
+  minBedrooms?: number | undefined;
+  minBathrooms?: number | undefined;
 }
 
 export class BookingEngineService {
@@ -74,6 +80,7 @@ export class BookingEngineService {
     console.log(`  children: ${params.children || 0}`);
     console.log(`  infants: ${params.infants || 0}`);
     console.log(`  pets: ${params.pets || 0}`);
+    console.log(`  filters: minPrice=${params.minPrice}, maxPrice=${params.maxPrice}, type=${params.propertyType}, beds=${params.minBedrooms}, baths=${params.minBathrooms}, amenities=${params.amenities?.length || 0}`);
     
     const queryParams = new URLSearchParams();
     if (params.checkIn) queryParams.append('checkIn', params.checkIn);
@@ -111,13 +118,51 @@ export class BookingEngineService {
       const response = await BookingEngineClient.get<any>(endpoint);
       const responseTime = Date.now() - startTime;
       
-      const listings = response.results || response.data || [];
+      let listings = response.results || response.data || [];
+      
+      // --- Advanced Post-Filtering ---
+      if (params.minBedrooms) {
+        listings = listings.filter((l: any) => (l.bedrooms || 0) >= params.minBedrooms!);
+      }
+      if (params.minBathrooms) {
+        listings = listings.filter((l: any) => (l.bathrooms || 0) >= params.minBathrooms!);
+      }
+      if (params.propertyType && params.propertyType !== 'All') {
+        listings = listings.filter((l: any) => l.propertyType?.toLowerCase() === params.propertyType!.toLowerCase());
+      }
+      if (params.minPrice || params.maxPrice) {
+        listings = listings.filter((l: any) => {
+          const price = l.prices?.basePrice;
+          if (!price) return true; // If no price available, keep it in browse mode
+          if (params.minPrice && price < params.minPrice) return false;
+          if (params.maxPrice && price > params.maxPrice) return false;
+          return true;
+        });
+      }
+      if (params.amenities && params.amenities.length > 0) {
+        listings = listings.filter((l: any) => {
+          const listingTags = (l.tags || []).map((t: string) => t.toLowerCase());
+          const listingAmenities = (l.amenities || []).map((a: string) => a.toLowerCase());
+          const allFeatures = new Set([...listingTags, ...listingAmenities]);
+          
+          return params.amenities!.every(a => {
+             const lowerA = a.toLowerCase();
+             // Simple contains check to match things like "air conditioning"
+             for (const feature of allFeatures) {
+               if (feature.includes(lowerA)) return true;
+             }
+             return false;
+          });
+        });
+      }
+      // -------------------------------
+      
       const listingIds = listings.map((l: any) => l._id || l.id);
       
       console.log(`[Booking ${mode}] Guesty response`);
       console.log(`  status: 200`);
       console.log(`  responseTime: ${responseTime}ms`);
-      console.log(`  listingCount: ${listings.length}`);
+      console.log(`  listingCount (after filters): ${listings.length}`);
       console.log(`  listingIds: ${JSON.stringify(listingIds)}`);
       
       if (listings.length > 0) {
