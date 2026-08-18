@@ -9,7 +9,10 @@ export class PropertyEditorialRepository {
       // Get the document matching the guestyListingId. 
       // Natively supports Sanity drafts via the configured client or queries (prefer published, but draft if authenticated context applies)
       // Usually the backend client is authenticated so we just fetch the document.
-      const query = `*[_type == $type && guestyListingId == $id][0]`;
+      const query = `*[_type == $type && guestyListingId == $id][0] {
+        ...,
+        "faqReferences": faqReferences[]->
+      }`;
       const doc = await sanityClient.fetch<PropertyEditorialDocument>(query, { 
         type: this.documentType, 
         id: guestyListingId 

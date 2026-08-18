@@ -86,7 +86,12 @@ export class PropertyService {
     const detailsDto = await this.guestyProvider.getListingById(id);
     
     // Map to PropertyDetails
-    return PropertyDetailsMapper.toPropertyDetails(detailsDto);
+    const property = PropertyDetailsMapper.toPropertyDetails(detailsDto);
+    
+    // Enrich with editorial data from Sanity
+    // TODO: Uncomment this when the Property Editorial feature is required
+    // return this.enrichWithEditorial(property as any);
+    return property;
   }
 
   async createProperty(data: CreatePropertyInput) {
