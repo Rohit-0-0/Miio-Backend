@@ -13,10 +13,7 @@ export class HomepageRepository extends SingletonRepository<HomepageData, Homepa
       ...,
       featuredEditorial {
         ...,
-        manualSelection[]->{
-          _id,
-          guestyListingId
-        }
+        manualSelection
       }
     }`;
     const result = await sanityClient.fetch(query, { id: this.documentId });

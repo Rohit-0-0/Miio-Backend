@@ -122,4 +122,13 @@ export interface PropertySummary {
   maxGuests: number;
   beds: number;
   amenities: Amenity[];
+  prices?: {
+    basePrice: number;
+    currency: string;
+    totalPrice?: number;
+  } | undefined;
+  reviews?: {
+    avg: number;
+    total: number;
+  } | undefined;
 }

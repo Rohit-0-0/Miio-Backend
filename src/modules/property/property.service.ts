@@ -65,8 +65,15 @@ export class PropertyService {
   }
 
   async getPropertiesByIds(ids: string[]) {
-    const properties = await this.repo.findByIds(ids);
-    return Promise.all(properties.map(async p => await this.enrichWithEditorial(p) as PropertyData));
+    // Fetch full details for each ID directly from Guesty API concurrently
+    const promises = ids.map(id => this.guestyProvider.getListingById(id).catch(e => null));
+    const results = await Promise.all(promises);
+    
+    // Filter out any failed fetches or nulls
+    const validResults = results.filter(r => r !== null);
+    
+    // Map them back to the standard PropertySummary format
+    return validResults.map(dto => PropertyMapper.toPropertySummary(dto));
   }
 
   async getPropertyBySlug(slug: string) {

@@ -27,7 +27,10 @@ export class HomepageMapper {
         ctaLink: sanityHome?.featuredEditorial?.cta?.href || '',
         displayMode: sanityHome?.featuredEditorial?.displayMode || ('LATEST' as FeaturedPropertiesMode),
         maxProperties: sanityHome?.featuredEditorial?.maxProperties || 3,
-        manualSelection: (sanityHome?.featuredEditorial?.manualSelection || []).map((ref: any) => ref?.guestyListingId || ref?._ref || ''),
+        manualSelection: (sanityHome?.featuredEditorial?.manualSelection || []).map((ref: any) => {
+          if (typeof ref === 'string') return ref;
+          return ref?.propertyId || ref?.guestyListingId || ref?._ref || '';
+        }),
       },
       editorialStatement: {
         heading: sanityHome?.featuredEditorial?.sideCardTitle || '',

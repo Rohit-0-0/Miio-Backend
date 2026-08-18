@@ -38,7 +38,16 @@ export class PropertyMapper {
       bathrooms: dto.bathrooms || 0,
       maxGuests: dto.accommodates || 0,
       beds: dto.beds || 0,
-      amenities
+      amenities,
+      prices: (dto as any).prices ? {
+        basePrice: (dto as any).prices.basePrice,
+        currency: (dto as any).prices.currency,
+        totalPrice: (dto as any).prices.totalPrice
+      } : undefined,
+      reviews: (dto as any).reviews ? {
+        avg: (dto as any).reviews.avg,
+        total: (dto as any).reviews.total
+      } : undefined
     };
   }
 }
