@@ -7,5 +7,7 @@ const controller = new EditorialController();
 router.get('/about', controller.getAbout);
 router.get('/locations', controller.getLocations);
 router.get('/locations/:slug', controller.getLocation);
+router.get('/journal-page', controller.getJournalPage);
+router.get('/locations-page', controller.getLocationsPage);
 
 export default router;

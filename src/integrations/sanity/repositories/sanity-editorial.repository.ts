@@ -7,6 +7,7 @@ import { journalQuery } from '../queries/journal.query';
 import { siteSettingsQuery } from '../queries/siteSettings.query';
 import { navigationQuery } from '../queries/navigation.query';
 import { footerQuery } from '../queries/footer.query';
+import { journalPageQuery, locationsPageQuery } from '../queries/pages.query';
 
 export class SanityEditorialRepository implements EditorialRepository {
   async getSiteSettings(): Promise<any> {
@@ -41,6 +42,14 @@ export class SanityEditorialRepository implements EditorialRepository {
   async getLocations(): Promise<any> {
     const { allLocationsQuery } = await import('../queries/location.query');
     return sanityClient.fetch(allLocationsQuery);
+  }
+
+  async getJournalPage(): Promise<any> {
+    return sanityClient.fetch(journalPageQuery);
+  }
+
+  async getLocationsPage(): Promise<any> {
+    return sanityClient.fetch(locationsPageQuery);
   }
 
   async getPropertyEditorial(guestyListingId: string): Promise<any> {

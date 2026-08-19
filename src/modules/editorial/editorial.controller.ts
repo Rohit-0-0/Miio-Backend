@@ -55,4 +55,30 @@ export class EditorialController {
       return res.status(500).json({ success: false, message: 'Internal server error' });
     }
   };
+
+  public getJournalPage = async (_req: Request, res: Response) => {
+    try {
+      const page = await this.editorialService.getJournalPage();
+      return res.status(200).json({
+        success: true,
+        data: page || {},
+      });
+    } catch (error) {
+      console.error('Error fetching journal page editorial:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  };
+
+  public getLocationsPage = async (_req: Request, res: Response) => {
+    try {
+      const page = await this.editorialService.getLocationsPage();
+      return res.status(200).json({
+        success: true,
+        data: page || {},
+      });
+    } catch (error) {
+      console.error('Error fetching locations page editorial:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  };
 }

@@ -42,6 +42,14 @@ export class EditorialService {
     return this.repository.getLocations();
   }
 
+  async getJournalPage() {
+    return this.repository.getJournalPage();
+  }
+
+  async getLocationsPage() {
+    return this.repository.getLocationsPage();
+  }
+
   async getPropertyEditorial(guestyListingId: string) {
     return this.repository.getPropertyEditorial(guestyListingId);
   }

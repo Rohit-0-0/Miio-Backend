@@ -7,5 +7,7 @@ export interface EditorialRepository {
   getJournal(slug: string): Promise<any>;
   getLocation(slug: string): Promise<any>;
   getLocations(): Promise<any>;
+  getJournalPage(): Promise<any>;
+  getLocationsPage(): Promise<any>;
   getPropertyEditorial(guestyListingId: string): Promise<any>;
 }
