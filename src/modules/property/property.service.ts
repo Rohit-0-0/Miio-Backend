@@ -38,8 +38,12 @@ export class PropertyService {
     let items: PropertySummary[] = response.results.map(dto => PropertyMapper.toPropertySummary(dto));
     
     if (query.guests) {
-      // Guesty's minOccupancy ensures the listing accommodates the guests,
-      // but we may optionally double-check locally if needed. The API handles it now.
+      // If dates are provided, Guesty handles it natively.
+      // If not, we filter locally so the user doesn't see properties that are too small.
+      //todo : check this later
+      // if (!(query.checkIn && query.checkOut)) {
+      //   items = items.filter(item => item.maxGuests >= query.guests!);
+      // }
     }
     
     const page = query.page || 1;
