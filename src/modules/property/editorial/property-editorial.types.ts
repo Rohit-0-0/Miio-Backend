@@ -25,6 +25,7 @@ export interface PropertyEditorialData {
   featuredAmenityIds: string[];
   seo: Seo;
   relatedProperties: RelatedPropertiesSettings;
+  relatedJournals?: any[];
 }
 
 export interface PropertyEditorialDocument extends PropertyEditorialData {
@@ -51,4 +52,5 @@ export const DEFAULT_PROPERTY_EDITORIAL: PropertyEditorialData = {
     displayMode: 'AUTO',
     properties: [],
   },
+  relatedJournals: [],
 };

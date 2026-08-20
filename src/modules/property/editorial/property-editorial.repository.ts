@@ -11,7 +11,8 @@ export class PropertyEditorialRepository {
       // Usually the backend client is authenticated so we just fetch the document.
       const query = `*[_type == $type && guestyListingId == $id][0] {
         ...,
-        "faqReferences": faqReferences[]->
+        "faqReferences": faqReferences[]->,
+        "relatedJournals": relatedJournals[]->
       }`;
       const doc = await sanityClient.fetch<PropertyEditorialDocument>(query, { 
         type: this.documentType, 

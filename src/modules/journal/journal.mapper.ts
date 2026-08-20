@@ -62,7 +62,11 @@ export class JournalMapper {
       featured: !!sanityDocument.featured,
       publishedAt: sanityDocument.publishDate,
       readingTime,
-      seo: sanityDocument.seo
+      seo: sanityDocument.seo,
+      relatedProperty: sanityDocument.relatedProperty,
+      ctaText: sanityDocument.ctaText,
+      ctaTitle: sanityDocument.ctaTitle,
+      ctaDescription: sanityDocument.ctaDescription
     } as JournalDocument;
   }
 }

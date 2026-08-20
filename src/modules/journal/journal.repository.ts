@@ -72,7 +72,13 @@ export class JournalRepository {
   }
 
   async findBySlug(slug: string): Promise<JournalDocument | null> {
-    const query = `*[_type == "${JOURNAL_DOCUMENT.TYPE}" && !(_id in path("drafts.**")) && slug.current == $slug][0]`;
+    const query = `*[_type == "${JOURNAL_DOCUMENT.TYPE}" && !(_id in path("drafts.**")) && slug.current == $slug][0] {
+      ...,
+      "relatedProperty": coalesce(
+        relatedProperty->,
+        *[_type == "propertyEditorial" && ^._id in relatedJournals[]._ref][0]
+      )
+    }`;
     return sanityClient.fetch(query, { slug });
   }
 

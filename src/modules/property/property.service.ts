@@ -93,9 +93,7 @@ export class PropertyService {
     const property = PropertyDetailsMapper.toPropertyDetails(detailsDto);
     
     // Enrich with editorial data from Sanity
-    // TODO: Uncomment this when the Property Editorial feature is required
-    // return this.enrichWithEditorial(property as any);
-    return property;
+    return this.enrichWithEditorial(property as any);
   }
 
   async createProperty(data: CreatePropertyInput) {

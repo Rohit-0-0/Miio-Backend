@@ -16,6 +16,10 @@ export interface JournalData {
   publishedAt?: string | undefined;
   readingTime?: number | undefined;
   seo?: Seo | undefined;
+  relatedProperty?: any | undefined;
+  ctaText?: string | undefined;
+  ctaTitle?: string | undefined;
+  ctaDescription?: string | undefined;
 }
 
 export interface JournalDocument extends JournalData {
