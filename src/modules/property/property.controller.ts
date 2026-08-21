@@ -61,6 +61,12 @@ export class PropertyController {
     return ok(res, property);
   }
 
+  async getReviews(req: Request, res: Response) {
+    const id = req.params['id'] as string;
+    const reviews = await this.service.getPropertyReviews(id);
+    return ok(res, reviews);
+  }
+
   async create(req: Request, res: Response) {
     const property = await this.service.createProperty(req.body);
     return created(res, property, 'Property created successfully');

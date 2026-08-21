@@ -14,4 +14,8 @@ export class GuestyProvider {
   async getListingById(id: string): Promise<GuestyListingDetailsDto> {
     return ListingsRepository.getListingById(id);
   }
+
+  async getReviews(listingId: string): Promise<any> {
+    return ListingsRepository.getReviews(listingId);
+  }
 }

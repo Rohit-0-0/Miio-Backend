@@ -129,4 +129,8 @@ export class PropertyService {
   async deleteProperty(id: string) {
     return this.repo.softDelete(id);
   }
+
+  async getPropertyReviews(id: string) {
+    return this.guestyProvider.getReviews(id);
+  }
 }

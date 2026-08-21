@@ -40,4 +40,11 @@ export class ListingsRepository {
     console.log('[ListingsRepository] Verifying Guesty authentication via GET /v1/listings?limit=1');
     return GuestyClient.get<any>('/v1/listings?limit=1');
   }
+
+  /**
+   * Retrieves reviews for a given listing from Guesty
+   */
+  static async getReviews(listingId: string): Promise<any> {
+    return GuestyClient.get<any>(`/v1/reviews?listingId=${listingId}&includeCustomChannels=false`);
+  }
 }
