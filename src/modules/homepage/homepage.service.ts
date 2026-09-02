@@ -15,7 +15,14 @@ export class HomepageService {
 
   async getHomepage(): Promise<HomepageDocument> {
     try {
-      const sanityHome = await this.editorialService.getHome();
+      const [sanityHome, footerData] = await Promise.all([
+        this.editorialService.getHome(),
+        this.editorialService.getFooter()
+      ]);
+      
+      if (sanityHome) {
+        sanityHome.footer = footerData;
+      }
       
       // Filter out any dead references that Sanity returned as null
       if (sanityHome?.locations?.items) {

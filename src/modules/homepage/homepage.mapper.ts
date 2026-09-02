@@ -19,7 +19,16 @@ export class HomepageMapper {
           asset: {
             _ref: img?.asset?._ref || img?.asset?._id || '',
           }
-        }))
+        })),
+        searchWidgetLabels: sanityHome?.hero?.searchWidgetLabels ? {
+          whereTo: sanityHome.hero.searchWidgetLabels.whereTo,
+          chooseLocation: sanityHome.hero.searchWidgetLabels.chooseLocation,
+          dates: sanityHome.hero.searchWidgetLabels.dates,
+          addDates: sanityHome.hero.searchWidgetLabels.addDates,
+          guests: sanityHome.hero.searchWidgetLabels.guests,
+          addGuests: sanityHome.hero.searchWidgetLabels.addGuests,
+          searchButton: sanityHome.hero.searchWidgetLabels.searchButton
+        } : undefined
       },
       featuredProperties: {
         title: sanityHome?.featuredEditorial?.heading || '',
@@ -63,6 +72,30 @@ export class HomepageMapper {
           title: feature || '',
         })),
       },
+      benefits: {
+        backgroundImage: sanityHome?.benefits?.backgroundImage?.asset ? {
+          _type: 'customImage',
+          asset: { _ref: sanityHome.benefits.backgroundImage.asset._ref || sanityHome.benefits.backgroundImage.asset._id || '' }
+        } : undefined,
+        items: (sanityHome?.benefits?.items || []).map((item: any) => ({
+          icon: item.icon || '',
+          title: item.title || '',
+          description: item.description || ''
+        }))
+      },
+      testimonials: {
+        items: (sanityHome?.testimonials?.items || []).map((item: any) => ({
+          quote: item.quote || '',
+          author: item.author || '',
+          date: item.date || '',
+          location: item.location || '',
+          source: item.source || '',
+          sourceLogo: item.sourceLogo?.asset ? {
+            _type: 'customImage',
+            asset: { _ref: item.sourceLogo.asset._ref || item.sourceLogo.asset._id || '' }
+          } : undefined
+        }))
+      },
       journal: {
         heading: sanityHome?.journal?.heading || '',
         ctaText: sanityHome?.journal?.cta?.text || '',
@@ -74,6 +107,11 @@ export class HomepageMapper {
         buttonText: sanityHome?.finalCta?.cta?.text || '',
         buttonLink: sanityHome?.finalCta?.cta?.href || '',
       },
+      footerLogos: (sanityHome?.footer?.partnerLogos || []).map((logo: any) => ({
+        _type: 'customImage',
+        asset: { _ref: logo?.logo?.asset?._ref || logo?.logo?.asset?._id || '' },
+        alt: logo?.alt || ''
+      }))
     };
   }
 }
