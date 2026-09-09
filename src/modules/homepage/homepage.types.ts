@@ -100,6 +100,7 @@ export interface SeoSection extends SeoMetadata, SectionMetadata {
 
 export interface BenefitItem {
   icon?: string;
+  iconImage?: ImageAsset;
   title: string;
   description: string;
 }
@@ -115,6 +116,7 @@ export interface TestimonialItem {
   date?: string;
   location?: string;
   source?: string;
+  rating?: number;
   sourceLogo?: ImageAsset;
 }
 
@@ -137,7 +139,15 @@ export interface HomepageData {
   finalCta?: FinalCtaSection;
   
   seo?: SeoSection;
-  footerLogos?: ImageAsset[];
+  footerTags?: string[];
+  footerColumns?: {
+    title: string;
+    links: { label: string; href: string }[];
+  }[];
+  newsletter?: {
+    heading: string;
+    description?: string;
+  };
 }
 
 export interface HomepageDocument extends HomepageData {

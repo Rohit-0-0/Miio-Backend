@@ -9,19 +9,29 @@ import type {
 
 import { EditorialService } from '@/integrations/sanity/services/editorial.service';
 import { HomepageMapper } from './homepage.mapper';
+import { ReviewsService } from '@/modules/reviews';
 
 export class HomepageService {
   private readonly editorialService = new EditorialService();
+  private readonly reviewsService = new ReviewsService();
 
   async getHomepage(): Promise<HomepageDocument> {
     try {
-      const [sanityHome, footerData] = await Promise.all([
+      const [sanityHome, footerData, featuredTestimonials] = await Promise.all([
         this.editorialService.getHome(),
-        this.editorialService.getFooter()
+        this.editorialService.getFooter(),
+        this.reviewsService.resolveFeaturedForHomepage().catch((error) => {
+          console.error('Failed to resolve featured Guesty reviews for homepage:', error);
+          return [];
+        }),
       ]);
       
       if (sanityHome) {
         sanityHome.footer = footerData;
+        // Featured Guesty reviews override CMS testimonials for public homepage
+        sanityHome.testimonials = {
+          items: featuredTestimonials,
+        };
       }
       
       // Filter out any dead references that Sanity returned as null

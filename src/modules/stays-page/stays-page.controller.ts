@@ -4,6 +4,7 @@ import {
   updateGeneralSchema,
   updateFiltersSchema,
   updateEmptyStateSchema,
+  updateFinalCtaSchema,
   updateSeoSchema,
 } from './stays-page.validation';
 
@@ -44,6 +45,16 @@ export class StaysPageController {
       const data = updateEmptyStateSchema.parse(req.body);
       const result = await this.service.updateEmptyState(data as any, (req as any).user?.id);
       res.json({ success: true, data: result.emptyState });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateFinalCta = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = updateFinalCtaSchema.parse(req.body);
+      const result = await this.service.updateFinalCta(data, (req as any).user?.id);
+      res.json({ success: true, data: result.finalCta });
     } catch (error) {
       next(error);
     }

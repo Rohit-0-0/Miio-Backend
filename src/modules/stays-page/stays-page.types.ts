@@ -28,11 +28,19 @@ export interface EmptyStateSettings extends SectionMetadata {
 
 export interface SeoSettings extends Seo, SectionMetadata {}
 
+export interface FinalCtaSettings extends SectionMetadata {
+  heading: string;
+  description?: string;
+  buttonText: string;
+  buttonLink: string;
+}
+
 export interface StaysPageData {
   version: number;
   general: GeneralSettings;
   filters: FilterConfiguration;
   emptyState: EmptyStateSettings;
+  finalCta?: FinalCtaSettings;
   seo?: SeoSettings;
 }
 

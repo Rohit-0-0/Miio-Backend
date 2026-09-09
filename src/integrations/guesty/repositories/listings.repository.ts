@@ -2,6 +2,13 @@ import { GuestyClient } from '../client/guesty.client';
 import type { GuestyListingsQuery, GuestyListingsResponse } from '../dto/listing.dto';
 import type { GuestyListingDetailsDto } from '../dto/listing-details.dto';
 
+export type GuestyReviewsQuery = {
+  listingId?: string;
+  limit?: number;
+  skip?: number;
+  includeCustomChannels?: boolean;
+};
+
 export class ListingsRepository {
   /**
    * Retrieves paginated listings from Guesty
@@ -34,7 +41,6 @@ export class ListingsRepository {
 
   /**
    * Fetches a lightweight response of listings to verify the authentication layer works.
-   * This is a temporary method for verification and will be expanded later.
    */
   static async verifyAuthentication(): Promise<any> {
     console.log('[ListingsRepository] Verifying Guesty authentication via GET /v1/listings?limit=1');
@@ -42,9 +48,18 @@ export class ListingsRepository {
   }
 
   /**
-   * Retrieves reviews for a given listing from Guesty
+   * Retrieves reviews from Guesty.
+   * listingId is optional — omit to fetch across all listings.
+   * Supports limit/skip pagination (Guesty max limit typically 100).
    */
-  static async getReviews(listingId: string): Promise<any> {
-    return GuestyClient.get<any>(`/v1/reviews?listingId=${listingId}&includeCustomChannels=false`);
+  static async getReviews(query: GuestyReviewsQuery = {}): Promise<any> {
+    const params = new URLSearchParams();
+    if (query.listingId) params.append('listingId', query.listingId);
+    params.append('includeCustomChannels', String(query.includeCustomChannels ?? false));
+    if (query.limit !== undefined) params.append('limit', String(Math.min(Math.max(query.limit, 1), 100)));
+    if (query.skip !== undefined) params.append('skip', String(Math.max(query.skip, 0)));
+
+    const queryString = params.toString();
+    return GuestyClient.get<any>(`/v1/reviews?${queryString}`);
   }
 }

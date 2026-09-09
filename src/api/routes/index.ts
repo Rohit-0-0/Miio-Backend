@@ -7,6 +7,7 @@ import { journalRoutes } from '@/modules/journal';
 import { mediaRoutes } from '@/modules/media';
 import { dashboardRoutes } from '@/modules/dashboard';
 import { staysPageRoutes } from '@/modules/stays-page';
+import { reviewsRoutes } from '@/modules/reviews';
 
 import homepageRouter from '@/modules/homepage/homepage.routes';
 import { authRoutes } from '@/modules/auth/auth.routes';
@@ -68,6 +69,7 @@ router.use('/journal', journalRoutes);
 router.use('/media', mediaRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/stays-page', staysPageRoutes);
+router.use('/reviews', reviewsRoutes);
 import bookingRouter from '@/modules/booking/booking.routes';
 router.use('/booking', bookingRouter);
 

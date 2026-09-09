@@ -19,5 +19,25 @@ export const homeQuery = `*[_type == "home" && !(_id in path("drafts.**"))][0] {
         asset->
       }
     }
+  },
+  benefits {
+    backgroundImage {
+      ...,
+      asset->
+    },
+    items[] {
+      icon,
+      title,
+      description,
+      iconImage {
+        ...,
+        asset->
+      }
+    }
+  },
+  featuredReviews[]{
+    _key,
+    reviewId,
+    listingId
   }
 }`;

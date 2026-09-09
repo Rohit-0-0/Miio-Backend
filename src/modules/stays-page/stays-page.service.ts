@@ -5,6 +5,7 @@ import type {
   GeneralSettings,
   FilterConfiguration,
   EmptyStateSettings,
+  FinalCtaSettings,
   SeoSettings
 } from './stays-page.types';
 
@@ -32,6 +33,10 @@ export class StaysPageService {
         existing.emptyState = this.getDefaultEmptyState();
         changed = true;
       }
+      if (!existing.finalCta) {
+        existing.finalCta = this.getDefaultFinalCta();
+        changed = true;
+      }
       
       if (changed) {
         await this.repo.save(existing);
@@ -46,6 +51,7 @@ export class StaysPageService {
       general: this.getDefaultGeneral(),
       filters: this.getDefaultFilters(),
       emptyState: this.getDefaultEmptyState(),
+      finalCta: this.getDefaultFinalCta(),
     };
     return this.repo.save(defaultDoc);
   }
@@ -73,6 +79,15 @@ export class StaysPageService {
       description: "We're currently updating our curated collection.",
       ctaText: 'Return Home',
       ctaLink: '/',
+    };
+  }
+
+  private getDefaultFinalCta(): FinalCtaSettings {
+    return {
+      heading: 'A more direct way to stay',
+      description: 'Book directly for the best available rates and a more seamless experience.',
+      buttonText: 'Browse by location',
+      buttonLink: '/locations',
     };
   }
 
@@ -109,6 +124,10 @@ export class StaysPageService {
 
   async updateEmptyState(data: Partial<EmptyStateSettings>, updatedBy?: string) {
     return this.updateSection('emptyState', data, updatedBy);
+  }
+
+  async updateFinalCta(data: Partial<FinalCtaSettings>, updatedBy?: string) {
+    return this.updateSection('finalCta', data, updatedBy);
   }
 
   async updateSeo(data: Partial<SeoSettings>, updatedBy?: string) {

@@ -79,17 +79,24 @@ export class HomepageMapper {
         } : undefined,
         items: (sanityHome?.benefits?.items || []).map((item: any) => ({
           icon: item.icon || '',
+          iconImage: item.iconImage?.asset ? {
+            _type: 'customImage',
+            asset: { _ref: item.iconImage.asset._ref || item.iconImage.asset._id || '' }
+          } : undefined,
           title: item.title || '',
           description: item.description || ''
         }))
       },
       testimonials: {
-        items: (sanityHome?.testimonials?.items || []).map((item: any) => ({
+        items: (sanityHome?.testimonials?.items || [])
+          .filter((item: any) => item && item.quote)
+          .map((item: any) => ({
           quote: item.quote || '',
           author: item.author || '',
           date: item.date || '',
           location: item.location || '',
           source: item.source || '',
+          rating: item.rating,
           sourceLogo: item.sourceLogo?.asset ? {
             _type: 'customImage',
             asset: { _ref: item.sourceLogo.asset._ref || item.sourceLogo.asset._id || '' }
@@ -107,11 +114,18 @@ export class HomepageMapper {
         buttonText: sanityHome?.finalCta?.cta?.text || '',
         buttonLink: sanityHome?.finalCta?.cta?.href || '',
       },
-      footerLogos: (sanityHome?.footer?.partnerLogos || []).map((logo: any) => ({
-        _type: 'customImage',
-        asset: { _ref: logo?.logo?.asset?._ref || logo?.logo?.asset?._id || '' },
-        alt: logo?.alt || ''
-      }))
+      footerTags: sanityHome?.footer?.partnerTags || [],
+      footerColumns: (sanityHome?.footer?.columns || []).map((col: any) => ({
+        title: col.title || '',
+        links: (col.links || []).map((link: any) => ({
+          label: link.label || '',
+          href: link.href || ''
+        }))
+      })),
+      newsletter: {
+        heading: sanityHome?.footer?.newsletter?.heading || 'Join the Miio Club for 10% off your first stay.',
+        description: sanityHome?.footer?.newsletter?.description || '',
+      }
     };
   }
 }

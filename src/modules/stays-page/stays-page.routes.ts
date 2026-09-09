@@ -13,6 +13,7 @@ router.use(requireAuth, requireAdmin);
 router.patch('/general', controller.updateGeneral);
 router.patch('/filters', controller.updateFilters);
 router.patch('/empty-state', controller.updateEmptyState);
+router.patch('/final-cta', controller.updateFinalCta);
 router.patch('/seo', controller.updateSeo);
 
 export default router;

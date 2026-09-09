@@ -8,17 +8,43 @@ export const locationQuery = `*[_type == "location" && slug.current == $slug && 
     asset->
   },
   description,
+  highlights[] {
+    _key,
+    text,
+    icon {
+      ...,
+      asset->
+    }
+  },
+  localGuideHeading,
+  localGuideItems[] {
+    _key,
+    title,
+    description,
+    image {
+      ...,
+      asset->
+    }
+  },
+  relatedJournalsCta,
   nearbyJournals[]-> {
     _id,
     title,
     "slug": slug.current,
     featured,
     publishDate,
+    author,
+    excerpt,
     heroImage {
       ...,
       asset->
-    },
-    excerpt
+    }
+  },
+  finalCta {
+    heading,
+    description,
+    buttonText,
+    buttonLink
   },
   seo {
     title,

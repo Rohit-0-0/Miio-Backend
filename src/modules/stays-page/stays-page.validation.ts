@@ -38,4 +38,11 @@ export const updateEmptyStateSchema = z.object({
   image: imageSchema.optional(),
 });
 
+export const updateFinalCtaSchema = z.object({
+  heading: z.string().min(1, 'Heading is required'),
+  description: z.string().optional(),
+  buttonText: z.string().min(1, 'Button text is required'),
+  buttonLink: z.string().min(1, 'Button link is required'),
+});
+
 export const updateSeoSchema = seoSchema;

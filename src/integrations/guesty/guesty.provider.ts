@@ -1,4 +1,4 @@
-import { ListingsRepository } from './repositories/listings.repository';
+import { ListingsRepository, type GuestyReviewsQuery } from './repositories/listings.repository';
 import type { GuestyListingsQuery, GuestyListingsResponse } from './dto/listing.dto';
 import type { GuestyListingDetailsDto } from './dto/listing-details.dto';
 
@@ -15,7 +15,11 @@ export class GuestyProvider {
     return ListingsRepository.getListingById(id);
   }
 
-  async getReviews(listingId: string): Promise<any> {
-    return ListingsRepository.getReviews(listingId);
+  async getReviews(query: GuestyReviewsQuery | string = {}): Promise<any> {
+    // Backward compatible: string = listingId
+    if (typeof query === 'string') {
+      return ListingsRepository.getReviews({ listingId: query });
+    }
+    return ListingsRepository.getReviews(query);
   }
 }
