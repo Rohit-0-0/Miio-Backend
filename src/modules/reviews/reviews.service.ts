@@ -20,11 +20,15 @@ export class ReviewsService {
     const limit = params.limit ?? 20;
     const skip = params.skip ?? 0;
 
-    const response = await this.guesty.getReviews({
-      listingId: params.listingId,
+    const guestyQuery: { listingId?: string; limit: number; skip: number } = {
       limit,
       skip,
-    });
+    };
+    if (params.listingId) {
+      guestyQuery.listingId = params.listingId;
+    }
+
+    const response = await this.guesty.getReviews(guestyQuery);
 
     const results = response?.results || response?.data || [];
     // Guesty Open API returns { data, limit, skip } — often no total count

@@ -3,13 +3,24 @@ import { env } from '@/shared/config/env';
 import type { EmailProvider, SendEmailOptions, SendEmailResult } from '../types';
 
 export class ResendProvider implements EmailProvider {
-  private resend: Resend;
+  private resend: Resend | null = null;
 
   constructor() {
-    this.resend = new Resend(env.RESEND_API_KEY);
+    if (env.RESEND_API_KEY) {
+      this.resend = new Resend(env.RESEND_API_KEY);
+    }
   }
 
   async send(options: SendEmailOptions): Promise<SendEmailResult> {
+    if (!this.resend || !env.EMAIL_FROM || !env.EMAIL_FROM_NAME) {
+      console.warn('[Email] Resend is not configured; skipping send');
+      return {
+        success: false,
+        provider: 'resend',
+        error: 'Email provider is not configured',
+      };
+    }
+
     try {
       const response = await this.resend.emails.send({
         from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,

@@ -19,9 +19,10 @@ const envSchema = z.object({
   SANITY_API_VERSION: z.string().default("2025-01-01"),
   SANITY_TOKEN: z.string().optional(),
   
-  RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
-  EMAIL_FROM: z.string().email("EMAIL_FROM must be a valid email"),
-  EMAIL_FROM_NAME: z.string().min(1, "EMAIL_FROM_NAME is required"),
+  // Email is optional in development so local API can boot without Resend
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().email("EMAIL_FROM must be a valid email").optional(),
+  EMAIL_FROM_NAME: z.string().optional(),
   APP_URL: z.string().url("APP_URL must be a valid URL"),
 });
 
@@ -32,6 +33,18 @@ if (!parsed.success) {
   console.error(parsed.error.format());
 
   process.exit(1);
+}
+
+if (parsed.data.NODE_ENV === 'production') {
+  const missingEmail: string[] = [];
+  if (!parsed.data.RESEND_API_KEY) missingEmail.push('RESEND_API_KEY');
+  if (!parsed.data.EMAIL_FROM) missingEmail.push('EMAIL_FROM');
+  if (!parsed.data.EMAIL_FROM_NAME) missingEmail.push('EMAIL_FROM_NAME');
+  if (missingEmail.length > 0) {
+    console.error('❌ Invalid environment variables');
+    console.error(`Missing required email config in production: ${missingEmail.join(', ')}`);
+    process.exit(1);
+  }
 }
 
 export const env = parsed.data;

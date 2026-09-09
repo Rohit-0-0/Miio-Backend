@@ -5,6 +5,18 @@ export interface SectionMetadata {
   updatedBy?: string;
 }
 
+/** Sanity image ref shape used across homepage sections */
+export type ImageAsset =
+  | Image
+  | {
+      _type?: string;
+      assetId?: string;
+      alt?: string;
+      asset?: { _ref?: string; _id?: string };
+    };
+
+export type SeoMetadata = Seo;
+
 export interface HeroSection extends SectionMetadata {
   eyebrow?: string;
   title: string;

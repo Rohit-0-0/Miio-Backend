@@ -53,7 +53,20 @@ export class StaysPageController {
   updateFinalCta = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = updateFinalCtaSchema.parse(req.body);
-      const result = await this.service.updateFinalCta(data, (req as any).user?.id);
+      const payload: {
+        heading: string;
+        buttonText: string;
+        buttonLink: string;
+        description?: string;
+      } = {
+        heading: data.heading,
+        buttonText: data.buttonText,
+        buttonLink: data.buttonLink,
+      };
+      if (data.description !== undefined) {
+        payload.description = data.description;
+      }
+      const result = await this.service.updateFinalCta(payload, (req as any).user?.id);
       res.json({ success: true, data: result.finalCta });
     } catch (error) {
       next(error);

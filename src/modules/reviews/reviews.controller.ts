@@ -5,11 +5,19 @@ export class ReviewsController {
   private readonly service = new ReviewsService();
 
   list = async (req: Request, res: Response) => {
-    const listingId = typeof req.query.listingId === 'string' ? req.query.listingId : undefined;
-    const limit = req.query.limit ? Number(req.query.limit) : 20;
-    const skip = req.query.skip ? Number(req.query.skip) : 0;
+    const listingIdRaw = req.query['listingId'];
+    const listingId = typeof listingIdRaw === 'string' ? listingIdRaw : undefined;
+    const limitRaw = req.query['limit'];
+    const skipRaw = req.query['skip'];
+    const limit = limitRaw ? Number(limitRaw) : 20;
+    const skip = skipRaw ? Number(skipRaw) : 0;
 
-    const data = await this.service.listReviews({ listingId, limit, skip });
+    const params: { listingId?: string; limit: number; skip: number } = { limit, skip };
+    if (listingId) {
+      params.listingId = listingId;
+    }
+
+    const data = await this.service.listReviews(params);
     return res.status(200).json({
       success: true,
       message: 'Reviews retrieved successfully',

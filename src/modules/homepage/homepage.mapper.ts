@@ -20,15 +20,19 @@ export class HomepageMapper {
             _ref: img?.asset?._ref || img?.asset?._id || '',
           }
         })),
-        searchWidgetLabels: sanityHome?.hero?.searchWidgetLabels ? {
-          whereTo: sanityHome.hero.searchWidgetLabels.whereTo,
-          chooseLocation: sanityHome.hero.searchWidgetLabels.chooseLocation,
-          dates: sanityHome.hero.searchWidgetLabels.dates,
-          addDates: sanityHome.hero.searchWidgetLabels.addDates,
-          guests: sanityHome.hero.searchWidgetLabels.guests,
-          addGuests: sanityHome.hero.searchWidgetLabels.addGuests,
-          searchButton: sanityHome.hero.searchWidgetLabels.searchButton
-        } : undefined
+        ...(sanityHome?.hero?.searchWidgetLabels
+          ? {
+              searchWidgetLabels: {
+                whereTo: sanityHome.hero.searchWidgetLabels.whereTo,
+                chooseLocation: sanityHome.hero.searchWidgetLabels.chooseLocation,
+                dates: sanityHome.hero.searchWidgetLabels.dates,
+                addDates: sanityHome.hero.searchWidgetLabels.addDates,
+                guests: sanityHome.hero.searchWidgetLabels.guests,
+                addGuests: sanityHome.hero.searchWidgetLabels.addGuests,
+                searchButton: sanityHome.hero.searchWidgetLabels.searchButton,
+              },
+            }
+          : {}),
       },
       featuredProperties: {
         title: sanityHome?.featuredEditorial?.heading || '',
@@ -73,35 +77,71 @@ export class HomepageMapper {
         })),
       },
       benefits: {
-        backgroundImage: sanityHome?.benefits?.backgroundImage?.asset ? {
-          _type: 'customImage',
-          asset: { _ref: sanityHome.benefits.backgroundImage.asset._ref || sanityHome.benefits.backgroundImage.asset._id || '' }
-        } : undefined,
-        items: (sanityHome?.benefits?.items || []).map((item: any) => ({
-          icon: item.icon || '',
-          iconImage: item.iconImage?.asset ? {
-            _type: 'customImage',
-            asset: { _ref: item.iconImage.asset._ref || item.iconImage.asset._id || '' }
-          } : undefined,
-          title: item.title || '',
-          description: item.description || ''
-        }))
+        ...(sanityHome?.benefits?.backgroundImage?.asset
+          ? {
+              backgroundImage: {
+                _type: 'customImage',
+                asset: {
+                  _ref:
+                    sanityHome.benefits.backgroundImage.asset._ref ||
+                    sanityHome.benefits.backgroundImage.asset._id ||
+                    '',
+                },
+              },
+            }
+          : {}),
+        items: (sanityHome?.benefits?.items || []).map((item: any) => {
+          const mapped: {
+            icon?: string;
+            iconImage?: { _type: string; asset: { _ref: string } };
+            title: string;
+            description: string;
+          } = {
+            title: item.title || '',
+            description: item.description || '',
+          };
+          if (item.icon) mapped.icon = item.icon;
+          if (item.iconImage?.asset) {
+            mapped.iconImage = {
+              _type: 'customImage',
+              asset: {
+                _ref: item.iconImage.asset._ref || item.iconImage.asset._id || '',
+              },
+            };
+          }
+          return mapped;
+        }),
       },
       testimonials: {
         items: (sanityHome?.testimonials?.items || [])
           .filter((item: any) => item && item.quote)
-          .map((item: any) => ({
-          quote: item.quote || '',
-          author: item.author || '',
-          date: item.date || '',
-          location: item.location || '',
-          source: item.source || '',
-          rating: item.rating,
-          sourceLogo: item.sourceLogo?.asset ? {
-            _type: 'customImage',
-            asset: { _ref: item.sourceLogo.asset._ref || item.sourceLogo.asset._id || '' }
-          } : undefined
-        }))
+          .map((item: any) => {
+            const mapped: {
+              quote: string;
+              author: string;
+              date?: string;
+              location?: string;
+              source?: string;
+              rating?: number;
+              sourceLogo?: { _type: string; asset: { _ref: string } };
+            } = {
+              quote: item.quote || '',
+              author: item.author || '',
+            };
+            if (item.date) mapped.date = item.date;
+            if (item.location) mapped.location = item.location;
+            if (item.source) mapped.source = item.source;
+            if (item.rating !== undefined) mapped.rating = item.rating;
+            if (item.sourceLogo?.asset) {
+              mapped.sourceLogo = {
+                _type: 'customImage',
+                asset: {
+                  _ref: item.sourceLogo.asset._ref || item.sourceLogo.asset._id || '',
+                },
+              };
+            }
+            return mapped;
+          }),
       },
       journal: {
         heading: sanityHome?.journal?.heading || '',
