@@ -31,6 +31,7 @@ export class PropertyDetailsMapper {
     return {
       id: dto._id,
       title: dto.title,
+      nickname: dto.nickname,
       slug: generateBaseSlug(dto.title),
       shortDescription: dto.publicDescription?.summary || undefined,
       longDescription,

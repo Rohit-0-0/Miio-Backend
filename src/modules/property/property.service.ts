@@ -81,8 +81,31 @@ export class PropertyService {
   }
 
   async getPropertyBySlug(slug: string) {
+    // 1. Prefer Sanity CMS documents when present (manual / editorial properties)
     const property = await this.repo.findBySlug(slug);
-    return this.enrichWithEditorial(property);
+    if (property) {
+      return this.enrichWithEditorial(property);
+    }
+
+    // 2. Fall back to Guesty listings — public browse URLs use generateBaseSlug(title)
+    const response = await this.guestyProvider.getListings({ limit: 100 });
+    const matches = (response.results || []).filter(
+      (dto) => generateBaseSlug(dto.title || '') === slug
+    );
+
+    if (matches.length === 0) {
+      return null;
+    }
+
+    // Prefer a non-child multi-unit listing when several titles share a slug
+    const preferred =
+      matches.find((dto) => dto.type && dto.type !== 'MTL_CHILD') || matches[0];
+
+    if (!preferred?._id) {
+      return null;
+    }
+
+    return this.getGuestyPropertyById(preferred._id);
   }
 
   async getGuestyPropertyById(id: string) {

@@ -4,6 +4,7 @@ import type { Amenity } from './property.types';
 export interface PropertyDetails {
   id: string;
   title: string;
+  nickname?: string;
   slug: string;
   shortDescription?: string | undefined;
   longDescription?: string | undefined;
