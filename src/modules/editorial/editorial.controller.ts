@@ -81,4 +81,17 @@ export class EditorialController {
       return res.status(500).json({ success: false, message: 'Internal server error' });
     }
   };
+
+  public getSiteSettings = async (_req: Request, res: Response) => {
+    try {
+      const settings = await this.editorialService.getSiteSettings();
+      return res.status(200).json({
+        success: true,
+        data: settings || {},
+      });
+    } catch (error) {
+      console.error('Error fetching site settings:', error);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  };
 }

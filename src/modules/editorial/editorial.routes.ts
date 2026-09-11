@@ -9,5 +9,6 @@ router.get('/locations', controller.getLocations);
 router.get('/locations/:slug', controller.getLocation);
 router.get('/journal-page', controller.getJournalPage);
 router.get('/locations-page', controller.getLocationsPage);
+router.get('/site-settings', controller.getSiteSettings);
 
 export default router;
