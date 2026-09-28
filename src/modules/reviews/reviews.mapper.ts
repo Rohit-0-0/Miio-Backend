@@ -15,6 +15,11 @@ export function normalizeGuestyReview(raw: any): Omit<GuestyReviewListItem, 'fea
     raw.reviewer?.firstName ||
     [raw.reviewer?.firstName, raw.reviewer?.lastName].filter(Boolean).join(' ') ||
     nested.reviewer_name ||
+    nested.author_name ||
+    nested.guest_name ||
+    nested.guestName ||
+    raw.guestName ||
+    raw.reviewerName ||
     'Guest';
 
   const createdAt = raw.createdAt || raw.createdAtGuesty || nested.created_at;
@@ -37,6 +42,7 @@ export function normalizeGuestyReview(raw: any): Omit<GuestyReviewListItem, 'fea
   return {
     id: String(id),
     listingId: String(listingId || ''),
+    guestId: String(raw.guestId || ''),
     quote: String(quote).trim(),
     author: String(author),
     date,

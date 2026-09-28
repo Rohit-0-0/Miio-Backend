@@ -7,6 +7,7 @@ export interface FeaturedReviewRef {
 export interface GuestyReviewListItem {
   id: string;
   listingId: string;
+  guestId?: string;
   quote: string;
   author: string;
   date: string;

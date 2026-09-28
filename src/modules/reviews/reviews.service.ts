@@ -1,4 +1,5 @@
 import { GuestyProvider } from '@/integrations/guesty/guesty.provider';
+import { GuestyClient } from '@/integrations/guesty/client/guesty.client';
 import { ReviewsRepository } from './reviews.repository';
 import { normalizeGuestyReview, toHomepageTestimonial } from './reviews.mapper';
 import type {
@@ -152,9 +153,25 @@ export class ReviewsService {
       }
     }
 
-    return featured
+    const mapped = featured
       .map((ref) => found.get(ref.reviewId))
-      .filter(Boolean)
-      .map((item) => toHomepageTestimonial(item!));
+      .filter(Boolean) as NonNullable<ReturnType<typeof normalizeGuestyReview>>[];
+
+    await Promise.all(
+      mapped.map(async (item) => {
+        if (item.author === 'Guest' && item.guestId) {
+          try {
+            const guestResponse = await GuestyClient.get<any>(`/v1/guests/${item.guestId}`);
+            if (guestResponse && guestResponse.firstName) {
+              item.author = guestResponse.firstName;
+            }
+          } catch (error) {
+            console.error(`Failed to fetch guest ${item.guestId} for review name:`, error);
+          }
+        }
+      })
+    );
+
+    return mapped.map((item) => toHomepageTestimonial(item));
   }
 }
