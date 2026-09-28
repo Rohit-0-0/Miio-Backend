@@ -152,6 +152,7 @@ export interface HomepageData {
   
   seo?: SeoSection;
   footerTags?: string[];
+  footerLogos?: ImageAsset[];
   footerColumns?: {
     title: string;
     links: { label: string; href: string }[];

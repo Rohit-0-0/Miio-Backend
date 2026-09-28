@@ -155,6 +155,13 @@ export class HomepageMapper {
         buttonLink: sanityHome?.finalCta?.cta?.href || '',
       },
       footerTags: sanityHome?.footer?.partnerTags || [],
+      footerLogos: (sanityHome?.footer?.partnerLogos || []).map((logo: any) => ({
+        _type: 'customImage',
+        asset: {
+          _ref: logo?.asset?._ref || logo?.asset?._id || '',
+        },
+        alt: logo?.alt || '',
+      })),
       footerColumns: (sanityHome?.footer?.columns || []).map((col: any) => ({
         title: col.title || '',
         links: (col.links || []).map((link: any) => ({
