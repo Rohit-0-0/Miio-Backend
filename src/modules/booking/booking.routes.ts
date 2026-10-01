@@ -34,7 +34,7 @@ router.post('/quotes', asyncHandler(async (req: Request, res: Response) => {
   res.json({ success: true, data: quote });
 }));
 router.get('/calendar/:listingId', asyncHandler(async (req: Request, res: Response) => {
-  const { listingId } = req.params;
+  const listingId = req.params['listingId'] as string;
   const startDate = req.query['startDate'] as string;
   const endDate = req.query['endDate'] as string;
   
