@@ -33,6 +33,24 @@ router.post('/quotes', asyncHandler(async (req: Request, res: Response) => {
   const quote = await BookingEngineService.createQuote(params);
   res.json({ success: true, data: quote });
 }));
+router.get('/calendar/:listingId', asyncHandler(async (req: Request, res: Response) => {
+  const { listingId } = req.params;
+  const startDate = req.query['startDate'] as string;
+  const endDate = req.query['endDate'] as string;
+  
+  if (!startDate || !endDate) {
+    res.status(400).json({ success: false, error: 'startDate and endDate are required' });
+    return;
+  }
+  
+  try {
+    const calendar = await BookingEngineService.getCalendar(listingId, startDate, endDate);
+    res.json({ success: true, data: calendar });
+  } catch (error: any) {
+    console.error(`[Calendar Route] Failed to fetch calendar for ${listingId}:`, error.message);
+    res.status(500).json({ success: false, error: 'Failed to fetch calendar data' });
+  }
+}));
 
 router.get('/payment-provider/:listingId', asyncHandler(async (req: Request, res: Response) => {
   const { listingId } = req.params;

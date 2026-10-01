@@ -186,4 +186,17 @@ export class BookingEngineService {
       throw error;
     }
   }
+
+  /**
+   * Fetches the calendar for a specific listing to determine availability and pricing per day.
+   */
+  static async getCalendar(listingId: string, startDate: string, endDate: string): Promise<any> {
+    console.log(`[Booking Calendar] Fetching calendar for ${listingId} from ${startDate} to ${endDate}`);
+    const queryParams = new URLSearchParams({
+      from: startDate,
+      to: endDate
+    });
+    
+    return BookingEngineClient.get<any>(`/api/listings/${listingId}/calendar?${queryParams.toString()}`);
+  }
 }
