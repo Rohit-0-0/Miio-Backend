@@ -13,6 +13,7 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(1).default("refresh_secret"),
   
   KLAVIYO_API_KEY: z.string().optional(),
+  KLAVIYO_NEWSLETTER_LIST_ID: z.string().optional(),
 
   SANITY_PROJECT_ID: z.string().min(1),
   SANITY_DATASET: z.string().default("production"),

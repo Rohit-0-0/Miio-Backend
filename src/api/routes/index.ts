@@ -71,6 +71,8 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/stays-page', staysPageRoutes);
 router.use('/reviews', reviewsRoutes);
 import bookingRouter from '@/modules/booking/booking.routes';
+import newsletterRouter from '@/modules/newsletter/newsletter.routes';
 router.use('/booking', bookingRouter);
+router.use('/newsletter', newsletterRouter);
 
 export default router;
