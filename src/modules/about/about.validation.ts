@@ -9,19 +9,9 @@ const imageSchema = z.object({
 });
 
 const ctaSchema = z.object({
-  label: z.string(),
+  text: z.string(),
   href: z.string(),
-});
-
-const sectionSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-});
-
-const valueSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  icon: z.string(),
+  style: z.string().optional(),
 });
 
 export const updateAboutSchema = z.object({
@@ -29,21 +19,34 @@ export const updateAboutSchema = z.object({
     hero: z.object({
       title: z.string(),
       subtitle: z.string(),
-      backgroundImage: imageSchema,
-      cta: ctaSchema,
+    }),
+
+    intro: z.object({
+      label: z.string(),
+      body: z.string(),
     }),
 
     story: z.object({
-      title: z.string(),
-      content: z.string(),
-      image: imageSchema,
+      label: z.string(),
+      heading: z.string(),
+      paragraphs: z.array(z.string()),
+      founderImage: imageSchema.optional(),
     }),
 
-    mission: sectionSchema,
+    pullQuote: z.object({
+      text: z.string(),
+    }),
 
-    vision: sectionSchema,
+    philosophy: z.object({
+      label: z.string(),
+      heading: z.string(),
+      paragraphs: z.array(z.string()),
+    }),
 
-    values: z.array(valueSchema),
+    closing: z.object({
+      body: z.string(),
+      cta: ctaSchema,
+    }),
 
     seo: z.object({
       title: z.string(),

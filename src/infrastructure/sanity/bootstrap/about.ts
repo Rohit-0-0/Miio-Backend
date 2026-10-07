@@ -8,36 +8,40 @@ export const DEFAULT_ABOUT_DATA: AboutDocument = {
   hero: {
     title: '',
     subtitle: '',
-    backgroundImage: {
-      assetId: '',
-      alt: '',
-    },
-    cta: {
-      label: '',
-      href: '',
-    },
+  },
+
+  intro: {
+    label: '',
+    body: '',
   },
 
   story: {
-    title: '',
-    content: '',
-    image: {
+    label: '',
+    heading: '',
+    paragraphs: [],
+    founderImage: {
       assetId: '',
       alt: '',
     },
   },
 
-  mission: {
-    title: '',
-    description: '',
+  pullQuote: {
+    text: '',
   },
 
-  vision: {
-    title: '',
-    description: '',
+  philosophy: {
+    label: '',
+    heading: '',
+    paragraphs: [],
   },
 
-  values: [],
+  closing: {
+    body: '',
+    cta: {
+      text: '',
+      href: '',
+    },
+  },
 
   seo: {
     title: '',
