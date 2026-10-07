@@ -7,7 +7,7 @@ import { env } from '@/shared/config/env';
 const router = Router();
 
 router.post('/subscribe', asyncHandler(async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { email, firstName, lastName, source } = req.body;
   if (!email) {
     res.status(400).json({ success: false, error: 'Email is required' });
     return;
@@ -21,9 +21,13 @@ router.post('/subscribe', asyncHandler(async (req: Request, res: Response) => {
   }
 
   if (klaviyoService.subscribeToNewsletter) {
-    const result = await klaviyoService.subscribeToNewsletter(email, listId);
+    const result = await klaviyoService.subscribeToNewsletter(email, listId, {
+      firstName,
+      lastName,
+      source
+    });
     if (!result.success) {
-      res.status(500).json({ success: false, error: 'Failed to subscribe to newsletter' });
+      res.status(500).json({ success: false, error: result.error || 'Failed to subscribe to newsletter' });
       return;
     }
   } else {
