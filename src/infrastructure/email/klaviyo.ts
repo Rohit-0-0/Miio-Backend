@@ -77,7 +77,7 @@ class KlaviyoEmailService {
       return { success: true };
     }
     if (options?.firstName || options?.lastName) {
-      const profileData = {
+      const profileData: any = {
         data: {
           type: 'profile',
           attributes: {
@@ -104,7 +104,7 @@ class KlaviyoEmailService {
         });
 
         if (createRes.status === 409) {
-          const errBody = await createRes.json();
+          const errBody = (await createRes.json()) as any;
           const profileId = errBody.errors?.[0]?.meta?.duplicate_profile_id;
           
           if (profileId) {

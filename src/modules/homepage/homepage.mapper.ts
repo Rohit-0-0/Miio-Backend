@@ -182,13 +182,15 @@ export class HomepageMapper {
       whatsappNumber: sanityHome?.footer?.whatsappNumber || '',
       newsletter: {
         heading: sanityHome?.footer?.newsletter?.heading || 'Join the Miio Club for 10% off your first stay.',
-        description: sanityHome?.footer?.newsletter?.description || '',
-        icon: sanityHome?.footer?.newsletter?.icon ? {
-          _type: 'customImage',
-          asset: {
-            _ref: sanityHome.footer.newsletter.icon.asset?._ref || sanityHome.footer.newsletter.icon.asset?._id || '',
+        ...(sanityHome?.footer?.newsletter?.description ? { description: sanityHome.footer.newsletter.description } : {}),
+        ...(sanityHome?.footer?.newsletter?.icon ? {
+          icon: {
+            _type: 'customImage',
+            asset: {
+              _ref: sanityHome.footer.newsletter.icon.asset?._ref || sanityHome.footer.newsletter.icon.asset?._id || '',
+            }
           }
-        } : undefined
+        } : {})
       }
     };
   }
