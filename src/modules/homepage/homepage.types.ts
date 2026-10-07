@@ -157,9 +157,16 @@ export interface HomepageData {
     title: string;
     links: { label: string; href: string }[];
   }[];
+  socialLinks?: {
+    platform: string;
+    url: string;
+    icon: ImageAsset;
+  }[];
+  whatsappNumber?: string;
   newsletter?: {
     heading: string;
     description?: string;
+    icon?: ImageAsset;
   };
 }
 
