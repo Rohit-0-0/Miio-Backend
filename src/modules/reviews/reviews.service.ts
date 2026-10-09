@@ -80,16 +80,7 @@ export class ReviewsService {
     return this.repository.setFeaturedRefs(next);
   }
 
-  private static featuredCache: { data: HomepageTestimonialItem[], expiresAt: number } | null = null;
-
-  /**
-   * Resolve featured Guesty review IDs into homepage testimonial cards.
-   */
   async resolveFeaturedForHomepage(): Promise<HomepageTestimonialItem[]> {
-    // Return cached results if valid (15 minute TTL)
-    if (ReviewsService.featuredCache && ReviewsService.featuredCache.expiresAt > Date.now()) {
-      return ReviewsService.featuredCache.data;
-    }
 
     const featured = await this.repository.getFeaturedRefs();
     if (featured.length === 0) return [];
@@ -178,12 +169,7 @@ export class ReviewsService {
     }
 
     const finalData = mapped.map((item) => toHomepageTestimonial(item));
-    
-    // Update cache
-    ReviewsService.featuredCache = {
-      data: finalData,
-      expiresAt: Date.now() + 15 * 60 * 1000 // 15 minutes
-    };
+
 
     return finalData;
   }
