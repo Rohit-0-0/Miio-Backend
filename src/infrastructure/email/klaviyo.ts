@@ -179,6 +179,86 @@ class KlaviyoEmailService {
       return { success: false, error: error.message };
     }
   }
+  async submitInteriorDesignEnquiry(formData: any) {
+    if (!this.isConfigured) {
+      console.log(`[Mock Email] Interior Design Enquiry from: ${formData.email}`, formData);
+      return { success: true };
+    }
+
+    const firstName = formData.firstName || '';
+    const lastName = formData.lastName || '';
+    
+    // Ensure phone number has a + for Klaviyo E.164 requirement
+    let formattedPhone = (formData.phone || '').trim();
+    if (formattedPhone && !formattedPhone.startsWith('+')) {
+      formattedPhone = `+${formattedPhone}`;
+    }
+
+    const profileData: any = {
+      data: {
+        type: 'profile',
+        attributes: {
+          email: formData.email,
+          first_name: firstName,
+          last_name: lastName,
+          phone_number: formattedPhone,
+          properties: {
+            Lead_Source: 'Interior Design Enquiry',
+            Property_Location: formData.propertyLocation,
+            Property_Type: formData.propertyType,
+            Property_Usage: formData.propertyUsage,
+            Service_Required: Array.isArray(formData.services) ? formData.services.join(', ') : formData.services,
+            Property_Size_Or_Bedrooms: formData.propertySize,
+            Property_Stage: formData.propertyStage,
+            Estimated_Budget: formData.budget,
+            Ideal_Timeline: formData.timeline,
+            Project_Details: formData.details,
+            Hear_About_Us: formData.hearAboutUs,
+            Floorplan_URL: formData.floorplanUrl
+          }
+        }
+      }
+    };
+
+    try {
+      // Create or update profile
+      const createRes = await fetch('https://a.klaviyo.com/api/profiles/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Klaviyo-API-Key ${env.KLAVIYO_API_KEY}`,
+          'accept': 'application/json',
+          'revision': '2024-02-15',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(profileData)
+      });
+
+      if (createRes.status === 409) {
+        const errBody = (await createRes.json()) as any;
+        const profileId = errBody.errors?.[0]?.meta?.duplicate_profile_id;
+        
+        if (profileId) {
+          profileData.data.id = profileId;
+          await fetch(`https://a.klaviyo.com/api/profiles/${profileId}/`, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Klaviyo-API-Key ${env.KLAVIYO_API_KEY}`,
+              'accept': 'application/json',
+              'revision': '2024-02-15',
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify(profileData)
+          });
+        }
+      }
+
+      await this.trackEvent('Submitted Interior Design Enquiry', formData.email, profileData.data.attributes.properties);
+      return { success: true };
+    } catch (e: any) {
+      console.error('Failed to submit interior design enquiry to Klaviyo:', e);
+      return { success: false, error: e.message };
+    }
+  }
 }
 
 export const emailService = new KlaviyoEmailService();

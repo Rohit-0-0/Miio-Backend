@@ -72,7 +72,9 @@ router.use('/stays-page', staysPageRoutes);
 router.use('/reviews', reviewsRoutes);
 import bookingRouter from '@/modules/booking/booking.routes';
 import newsletterRouter from '@/modules/newsletter/newsletter.routes';
+import enquiryRouter from '@/modules/enquiry/enquiry.routes';
 router.use('/booking', bookingRouter);
 router.use('/newsletter', newsletterRouter);
+router.use('/enquiry', enquiryRouter);
 
 export default router;
