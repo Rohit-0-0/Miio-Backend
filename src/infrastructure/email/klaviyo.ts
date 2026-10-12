@@ -253,6 +253,20 @@ class KlaviyoEmailService {
       }
 
       await this.trackEvent('Submitted Interior Design Enquiry', formData.email, profileData.data.attributes.properties);
+
+      // Add to Klaviyo list if configured
+      if (env.KLAVIYO_NEWSLETTER_LIST_ID) {
+        try {
+          await this.subscribeToNewsletter(formData.email, env.KLAVIYO_NEWSLETTER_LIST_ID, {
+            firstName,
+            lastName,
+            source: 'Interior Design Enquiry'
+          });
+        } catch (subErr) {
+          console.error('Failed to subscribe interior design enquiry to list:', subErr);
+        }
+      }
+
       return { success: true };
     } catch (e: any) {
       console.error('Failed to submit interior design enquiry to Klaviyo:', e);
