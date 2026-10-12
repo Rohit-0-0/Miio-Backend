@@ -24,8 +24,8 @@ export class BookingEngineClient {
       });
 
       if (!response.ok) {
-        if ((response.status === 401 || response.status === 403) && !isRetry) {
-          console.warn(`[Booking Engine API] Received ${response.status} from API. Invalidating token and retrying...`);
+        if (response.status === 401 && !isRetry) {
+          console.warn(`[Booking Engine API] Received 401 from API. Invalidating token and retrying...`);
           tokenManager.invalidateToken();
           return this.request<T>(endpoint, options, true);
         }
