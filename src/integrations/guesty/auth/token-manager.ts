@@ -14,13 +14,10 @@ export class TokenManager {
   private refreshPromise: Promise<string> | null = null;
 
   private constructor() {
-    // Automatically select storage based on environment
-    if (process.env['NODE_ENV'] === 'development') {
-      this.store = new FileTokenStore();
-    } else {
-      // Use SanityTokenStore in production to persist token across Render restarts!
-      this.store = new SanityTokenStore();
-    }
+    // Both development and production share SanityTokenStore!
+    // Guesty has a strict limit of 5 tokens per 24 hours per clientId across all environments.
+    // Sharing Sanity ensures local and production reuse the exact same token.
+    this.store = new SanityTokenStore();
   }
 
   static getInstance(): TokenManager {
@@ -32,7 +29,7 @@ export class TokenManager {
 
   /**
    * Retrieves a valid access token. If the current token is missing or expired
-   * (within the refresh buffer), it fetches a new one. Deduplicates concurrent requests.
+   * (within the 30-minute refresh buffer advised by Guesty), it fetches a new one. Deduplicates concurrent requests.
    */
   async getToken(): Promise<string> {
     let data: TokenData | null = null;
@@ -44,11 +41,11 @@ export class TokenManager {
       data = this.store.get();
     }
 
-    // Check if token is present and hasn't expired (with a 5-minute buffer)
-    const fiveMinutes = 5 * 60 * 1000;
+    // Guesty best practice: refresh 30 - 60 minutes before it expires
+    const refreshBuffer = 30 * 60 * 1000;
     const now = Date.now();
 
-    if (data && data.accessToken && data.expiresAt && data.expiresAt > now + fiveMinutes) {
+    if (data && data.accessToken && data.expiresAt && data.expiresAt > now + refreshBuffer) {
       console.log('[Guesty Integration] Using cached token.');
       return data.accessToken;
     }
@@ -56,7 +53,6 @@ export class TokenManager {
     // Fallback to hardcoded token from environment (emergency bypass)
     if (process.env['FALLBACK_GUESTY_TOKEN']) {
       console.log('[Guesty Integration] Using emergency FALLBACK_GUESTY_TOKEN.');
-      // Save it so we don't have to rely on env forever, assuming it's valid for 24h
       const emergencyData = {
         accessToken: process.env['FALLBACK_GUESTY_TOKEN'],
         expiresAt: now + (24 * 60 * 60 * 1000) // Assumed 24h
@@ -75,12 +71,12 @@ export class TokenManager {
       return this.refreshPromise;
     }
 
-    console.log('[Guesty Integration] Token expired or missing.');
-    this.refreshPromise = this.performRefresh();
+    console.log('[Guesty Integration] Token expired or within 30-min refresh window.');
+    this.refreshPromise = this.performRefresh(data);
     return this.refreshPromise;
   }
 
-  private async performRefresh(): Promise<string> {
+  private async performRefresh(existingTokenData: TokenData | null): Promise<string> {
     console.log('[Guesty Integration] Refreshing OAuth token.');
     try {
       const response = await GuestyAuthService.authenticate();
@@ -100,6 +96,13 @@ export class TokenManager {
       return data.accessToken;
     } catch (error) {
       console.error('[Guesty Integration] Failed to refresh access token:', error);
+
+      // If Guesty rate-limits us (TOO_MANY_REQUESTS) or fails, fallback to existing token if still not strictly expired
+      if (existingTokenData && existingTokenData.accessToken && existingTokenData.expiresAt > Date.now()) {
+        console.warn('[Guesty Integration] Refresh failed; falling back to existing unexpired token.');
+        return existingTokenData.accessToken;
+      }
+
       throw error;
     } finally {
       // Clear the promise so subsequent requests know the refresh is done

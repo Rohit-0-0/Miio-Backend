@@ -9,8 +9,9 @@ const config: ClientConfig = {
   useCdn: false,
 };
 
-if (env.SANITY_TOKEN) {
-  config.token = env.SANITY_TOKEN;
+const token = env.SANITY_TOKEN || process.env['SANITY_API_WRITE_TOKEN'] || process.env['SANITY_API_TOKEN'];
+if (token) {
+  config.token = token;
 }
 
 export const sanityClient = createClient(config);

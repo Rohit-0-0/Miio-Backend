@@ -24,9 +24,10 @@ export class GuestyClient {
       });
 
       if (!response.ok) {
-        // Handle Authentication Failure (401 / 403)
-        if ((response.status === 401 || response.status === 403) && !isRetry) {
-          console.warn(`[Guesty Integration] Received ${response.status} from API. Invalidating token and retrying...`);
+        // Handle Authentication Failure (401 Unauthorized only)
+        // Note: 403 Forbidden is resource- or listing-specific and does not mean token expired.
+        if (response.status === 401 && !isRetry) {
+          console.warn(`[Guesty Integration] Received 401 Unauthorized from API. Attempting token refresh and retrying once...`);
           tokenManager.invalidateToken();
           
           // Retry the request exactly once

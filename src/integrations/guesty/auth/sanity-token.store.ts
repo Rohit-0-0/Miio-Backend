@@ -1,7 +1,8 @@
 import { sanityClient } from '@/infrastructure/sanity';
 import type { TokenStore, TokenData } from './token-store';
 
-const DOC_ID = 'system.guestyToken';
+const PRIMARY_DOC_ID = 'guestyToken';
+const LEGACY_DOC_ID = 'system.guestyToken';
 
 export class SanityTokenStore implements TokenStore {
   private cache: TokenData | null = null;
@@ -15,7 +16,12 @@ export class SanityTokenStore implements TokenStore {
     }
 
     try {
-      const doc = await sanityClient.getDocument(DOC_ID);
+      // Try PRIMARY_DOC_ID first, fall back to LEGACY_DOC_ID
+      let doc = await sanityClient.getDocument(PRIMARY_DOC_ID);
+      if (!doc || !doc['accessToken']) {
+        doc = await sanityClient.getDocument(LEGACY_DOC_ID);
+      }
+
       if (doc && doc['accessToken'] && doc['expiresAt']) {
         this.cache = {
           accessToken: doc['accessToken'] as string,
@@ -43,12 +49,14 @@ export class SanityTokenStore implements TokenStore {
     this.lastFetch = Date.now();
     
     try {
+      // Upsert into PRIMARY_DOC_ID
       await sanityClient
         .transaction()
-        .createIfNotExists({ _id: DOC_ID, _type: 'system.tokens' })
-        .patch(DOC_ID, p => p.set({ 
+        .createIfNotExists({ _id: PRIMARY_DOC_ID, _type: 'guestyToken' })
+        .patch(PRIMARY_DOC_ID, p => p.set({ 
           accessToken: data.accessToken, 
-          expiresAt: data.expiresAt 
+          expiresAt: data.expiresAt,
+          updatedAt: new Date().toISOString()
         }))
         .commit();
       console.log('[Guesty Integration] Saved token to Sanity.');
@@ -63,8 +71,10 @@ export class SanityTokenStore implements TokenStore {
   }
 
   clear(): void {
+    // Only invalidate local in-memory cache — NEVER delete the Sanity document!
+    // Guesty only allows 5 token creations per 24 hours across the entire clientId.
     this.cache = null;
     this.lastFetch = 0;
-    sanityClient.delete(DOC_ID).catch(console.error);
+    console.log('[Guesty Integration] In-memory token cache cleared (Sanity document preserved).');
   }
 }
