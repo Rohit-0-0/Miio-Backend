@@ -48,6 +48,10 @@ export class HomepageMapper {
       editorialStatement: {
         heading: sanityHome?.featuredEditorial?.sideCardTitle || '',
         description: sanityHome?.featuredEditorial?.sideCardDescription || '',
+        buttonText: sanityHome?.featuredEditorial?.cta?.text || '',
+        buttonLink: sanityHome?.featuredEditorial?.cta?.href || '',
+        ctaText: sanityHome?.featuredEditorial?.cta?.text || '',
+        ctaLink: sanityHome?.featuredEditorial?.cta?.href || '',
       },
       locations: {
         heading: sanityHome?.locations?.heading || '',
