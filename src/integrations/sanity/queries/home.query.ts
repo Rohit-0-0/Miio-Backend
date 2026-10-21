@@ -13,6 +13,7 @@ export const homeQuery = `*[_type == "home" && !(_id in path("drafts.**"))][0] {
       _id,
       title,
       description,
+      shortDescription,
       "slug": slug.current,
       heroImage {
         ...,

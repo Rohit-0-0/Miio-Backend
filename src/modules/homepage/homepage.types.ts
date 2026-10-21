@@ -167,6 +167,7 @@ export interface HomepageData {
     icon: ImageAsset;
   }[];
   whatsappNumber?: string;
+  whatsappIcon?: ImageAsset;
   newsletter?: {
     heading: string;
     description?: string;

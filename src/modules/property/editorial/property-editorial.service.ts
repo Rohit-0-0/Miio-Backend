@@ -21,6 +21,8 @@ export class PropertyEditorialService {
     return {
       ...DEFAULT_PROPERTY_EDITORIAL,
       guestyListingId,
+      subtitle: doc.subtitle || '',
+      shortDescription: doc.shortDescription || '',
       description: doc.overview || '',
       experience: doc.heroStory || '',
       faq: flattenedFaqs,

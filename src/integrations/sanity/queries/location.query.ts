@@ -60,5 +60,6 @@ export const allLocationsQuery = `*[_type == "location" && !(_id in path("drafts
     ...,
     asset->
   },
-  description
+  description,
+  shortDescription
 }`;

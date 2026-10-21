@@ -18,6 +18,8 @@ export interface RelatedPropertiesSettings {
 
 export interface PropertyEditorialData {
   guestyListingId: string;
+  subtitle?: string;
+  shortDescription?: string;
   description: string;
   experience: string;
   miioStandard: MiioStandard[];

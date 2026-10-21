@@ -58,7 +58,7 @@ export class HomepageMapper {
         items: (sanityHome?.locations?.items || []).filter((item: any) => !!item).map((item: any, i: number) => ({
           id: item._id || (i + 1).toString(),
           name: item.title || '',
-          description: item.description || '',
+          description: item.shortDescription || item.description || '',
           image: item.heroImage?.asset ? {
             _type: 'customImage',
             asset: {
@@ -184,8 +184,16 @@ export class HomepageMapper {
         }
       })),
       whatsappNumber: sanityHome?.footer?.whatsappNumber || '',
+      ...(sanityHome?.footer?.whatsappIcon ? {
+        whatsappIcon: {
+          _type: 'customImage',
+          asset: {
+            _ref: sanityHome.footer.whatsappIcon.asset?._ref || sanityHome.footer.whatsappIcon.asset?._id || '',
+          }
+        }
+      } : {}),
       newsletter: {
-        heading: sanityHome?.footer?.newsletter?.heading || 'Join the Miio Club for 10% off your first stay.',
+        heading: sanityHome?.footer?.newsletter?.heading || 'Join the Miio Club\nfor 10% off your\nfirst stay.',
         ...(sanityHome?.footer?.newsletter?.description ? { description: sanityHome.footer.newsletter.description } : {}),
         ...(sanityHome?.footer?.newsletter?.icon ? {
           icon: {
