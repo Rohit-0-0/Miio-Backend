@@ -75,6 +75,7 @@ export class HomepageMapper {
         rating: sanityHome?.trust?.ratingText || '',
         reviewCount: sanityHome?.trust?.reviewText || '',
         verifiedText: sanityHome?.trust?.verifiedText || '',
+        reviewsLink: sanityHome?.trust?.reviewsLink || undefined,
         items: (sanityHome?.trust?.features || []).map((feature: string, i: number) => ({
           id: (i + 1).toString(),
           title: feature || '',
