@@ -64,6 +64,7 @@ export class JournalMapper {
       readingTime,
       seo: sanityDocument.seo,
       relatedProperty: sanityDocument.relatedProperty,
+      relatedProperties: sanityDocument.relatedProperties,
       ctaText: sanityDocument.ctaText,
       ctaTitle: sanityDocument.ctaTitle,
       ctaDescription: sanityDocument.ctaDescription

@@ -17,6 +17,7 @@ export interface JournalData {
   readingTime?: number | undefined;
   seo?: Seo | undefined;
   relatedProperty?: any | undefined;
+  relatedProperties?: any[] | undefined;
   ctaText?: string | undefined;
   ctaTitle?: string | undefined;
   ctaDescription?: string | undefined;

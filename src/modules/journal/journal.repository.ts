@@ -79,7 +79,10 @@ export class JournalRepository {
         *[_type == "propertyEditorial" && (^._id in relatedJournals[]._ref || ^._id == relatedJournals[0]._ref)][0]
       ),
       "relatedProperties": coalesce(
-        relatedProperties[]->,
+        relatedProperties[] {
+          ...,
+          _type == "reference" => @->
+        },
         *[_type == "propertyEditorial" && (^._id in relatedJournals[]._ref || ^._id == relatedJournals[0]._ref)]
       )
     }`;
