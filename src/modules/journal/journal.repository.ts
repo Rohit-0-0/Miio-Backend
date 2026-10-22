@@ -74,10 +74,13 @@ export class JournalRepository {
   async findBySlug(slug: string): Promise<JournalDocument | null> {
     const query = `*[_type == "${JOURNAL_DOCUMENT.TYPE}" && !(_id in path("drafts.**")) && slug.current == $slug][0] {
       ...,
+      "relatedProperty": coalesce(
+        relatedProperty->,
+        *[_type == "propertyEditorial" && (^._id in relatedJournals[]._ref || ^._id == relatedJournals[0]._ref)][0]
+      ),
       "relatedProperties": coalesce(
         relatedProperties[]->,
-        [relatedProperty->],
-        *[_type == "propertyEditorial" && ^._id in relatedJournals[]._ref]
+        *[_type == "propertyEditorial" && (^._id in relatedJournals[]._ref || ^._id == relatedJournals[0]._ref)]
       )
     }`;
     return sanityClient.fetch(query, { slug });
