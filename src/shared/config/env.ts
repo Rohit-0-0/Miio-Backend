@@ -25,6 +25,9 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().email("EMAIL_FROM must be a valid email").optional(),
   EMAIL_FROM_NAME: z.string().optional(),
   APP_URL: z.string().url("APP_URL must be a valid URL"),
+
+  // AI chatbot. Optional so the API still boots without it; /chat then answers 503.
+  ANTHROPIC_API_KEY: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -42,9 +45,13 @@ if (parsed.data.NODE_ENV === 'production') {
   if (!parsed.data.EMAIL_FROM) missingEmail.push('EMAIL_FROM');
   if (!parsed.data.EMAIL_FROM_NAME) missingEmail.push('EMAIL_FROM_NAME');
   if (missingEmail.length > 0) {
-    console.error('❌ Invalid environment variables');
-    console.error(`Missing required email config in production: ${missingEmail.join(', ')}`);
-    process.exit(1);
+    // Warn instead of exiting: the chatbot does not send email (Guesty handles that),
+    // so the server must be able to boot without Resend. Auth emails (OTP, password
+    // reset) will not work until these are set.
+    console.warn(
+      `⚠️  Email is not configured in production (missing: ${missingEmail.join(', ')}). ` +
+        'Auth emails such as OTP and password reset will not be sent.',
+    );
   }
 }
 

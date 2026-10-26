@@ -8,6 +8,7 @@ import { mediaRoutes } from '@/modules/media';
 import { dashboardRoutes } from '@/modules/dashboard';
 import { staysPageRoutes } from '@/modules/stays-page';
 import { reviewsRoutes } from '@/modules/reviews';
+import { chatRoutes } from '@/modules/chat';
 
 import homepageRouter from '@/modules/homepage/homepage.routes';
 import { authRoutes } from '@/modules/auth/auth.routes';
@@ -70,6 +71,7 @@ router.use('/media', mediaRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/stays-page', staysPageRoutes);
 router.use('/reviews', reviewsRoutes);
+router.use('/chat', chatRoutes);
 import bookingRouter from '@/modules/booking/booking.routes';
 import newsletterRouter from '@/modules/newsletter/newsletter.routes';
 import enquiryRouter from '@/modules/enquiry/enquiry.routes';

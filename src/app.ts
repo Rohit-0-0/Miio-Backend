@@ -11,6 +11,11 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 
+// The API runs behind a hosting proxy (e.g. Render). Trust one hop so req.ip is the
+// real client IP, which the chat rate limiter relies on. Verify after deploying by
+// checking that different visitors get different req.ip values.
+app.set('trust proxy', 1);
+
 // Security
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
