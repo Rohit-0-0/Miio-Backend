@@ -1,5 +1,10 @@
 import { sanityClient } from '@/infrastructure/sanity/client';
-import type { PropertyEditorialDocument, PropertyEditorialData } from './property-editorial.types';
+import type {
+  CancellationPolicyDocument,
+  HouseRulesGroup,
+  PropertyEditorialDocument,
+  PropertyEditorialData,
+} from './property-editorial.types';
 
 export class PropertyEditorialRepository {
   private readonly documentType = 'propertyEditorial';
@@ -12,6 +17,8 @@ export class PropertyEditorialRepository {
       const query = `*[_type == $type && guestyListingId == $id][0] {
         ...,
         "faqReferences": faqReferences[]->,
+        "houseRuleReferences": houseRuleReferences[]->,
+        "cancellationPolicyReference": cancellationPolicyReference->,
         "relatedJournals": relatedJournals[]->
       }`;
       const doc = await sanityClient.fetch<PropertyEditorialDocument>(query, { 
@@ -21,6 +28,25 @@ export class PropertyEditorialRepository {
       return doc || null;
     } catch (error) {
       console.error(`Failed to fetch Property Editorial for ${guestyListingId}:`, error);
+      return null;
+    }
+  }
+
+  findDefaultHouseRules(): Promise<HouseRulesGroup | null> {
+    return this.findDefaultDocument<HouseRulesGroup>('houseRules');
+  }
+
+  findDefaultCancellationPolicy(): Promise<CancellationPolicyDocument | null> {
+    return this.findDefaultDocument<CancellationPolicyDocument>('cancellationPolicy');
+  }
+
+  private async findDefaultDocument<T>(type: string): Promise<T | null> {
+    try {
+      const query = `*[_type == $type && isDefault == true && !(_id in path("drafts.**"))][0]`;
+      const doc = await sanityClient.fetch<T | null>(query, { type });
+      return doc || null;
+    } catch (error) {
+      console.error(`Failed to fetch default ${type}:`, error);
       return null;
     }
   }

@@ -5,6 +5,40 @@ export interface FAQ {
   answer: string;
 }
 
+export type HouseRuleCategory = 'checkInOut' | 'duringStay' | 'beforeYouLeave' | 'safety' | 'additional';
+
+export interface HouseRule {
+  category: HouseRuleCategory;
+  rule: string;
+  details?: string;
+  icon?: string;
+}
+
+export interface HouseRulesGroup {
+  _id: string;
+  title?: string;
+  intro?: string;
+  rules?: HouseRule[];
+}
+
+export interface CancellationTier {
+  title: string;
+  timeframe?: string;
+  details?: string;
+}
+
+export interface CancellationPolicy {
+  title: string;
+  summary?: string;
+  intro?: string;
+  tiers: CancellationTier[];
+  details?: unknown[];
+}
+
+export interface CancellationPolicyDocument extends Partial<CancellationPolicy> {
+  _id: string;
+}
+
 export interface MiioStandard {
   icon: string;
   title: string;
@@ -24,6 +58,9 @@ export interface PropertyEditorialData {
   experience: string;
   miioStandard: MiioStandard[];
   faq: FAQ[];
+  houseRules: HouseRule[];
+  houseRulesIntro?: string;
+  cancellationPolicy: CancellationPolicy | null;
   featuredAmenityIds: string[];
   seo: Seo;
   relatedProperties: RelatedPropertiesSettings;
@@ -44,6 +81,8 @@ export const DEFAULT_PROPERTY_EDITORIAL: PropertyEditorialData = {
   experience: '',
   miioStandard: [],
   faq: [],
+  houseRules: [],
+  cancellationPolicy: null,
   featuredAmenityIds: [],
   seo: {
     title: '',
