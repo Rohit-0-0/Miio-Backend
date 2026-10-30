@@ -1,5 +1,16 @@
 import { toHTML } from '@portabletext/to-html';
+import { sanityConfig } from '@/integrations/sanity/config/sanity.config';
 import type { JournalDocument, JournalData } from './journal.types';
+
+function buildSanityImageUrl(ref?: string): string {
+  if (!ref || !ref.startsWith('image-')) return '';
+  let filename = ref.replace(/^image-/, '');
+  const lastDashIndex = filename.lastIndexOf('-');
+  if (lastDashIndex !== -1) {
+    filename = filename.substring(0, lastDashIndex) + '.' + filename.substring(lastDashIndex + 1);
+  }
+  return `https://cdn.sanity.io/images/${sanityConfig.projectId}/${sanityConfig.dataset}/${filename}?auto=format&fit=max&w=2000`;
+}
 
 export class JournalMapper {
   static toDto(sanityDocument: any): JournalDocument {
@@ -20,7 +31,18 @@ export class JournalMapper {
     let htmlContent = '';
     try {
       if (contentBlocks.length > 0) {
-        htmlContent = toHTML(contentBlocks);
+        htmlContent = toHTML(contentBlocks, {
+          components: {
+            types: {
+              customImage: ({ value }) => {
+                const ref = value?.asset?._ref || value?.asset?._id;
+                const src = buildSanityImageUrl(ref);
+                const alt = value?.alt || '';
+                return src ? `<figure class="my-8"><img src="${src}" alt="${alt}" class="w-full rounded-lg object-cover" /></figure>` : '';
+              },
+            },
+          },
+        });
       }
     } catch (error) {
       console.error('Error compiling Portable Text to HTML:', error);
