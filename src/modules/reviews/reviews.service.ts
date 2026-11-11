@@ -52,6 +52,26 @@ export class ReviewsService {
         featured: featuredIds.has(item.id),
       }));
 
+    // Resolve guest names so Sanity CMS review selectors and admin panel see the real guest names
+    const guestCache = new Map<string, string>();
+    for (const item of items) {
+      if (item.author === 'Guest' && item.guestId) {
+        if (guestCache.has(item.guestId)) {
+          item.author = guestCache.get(item.guestId)!;
+        } else {
+          try {
+            const guestResponse = await GuestyClient.get<any>(`/v1/guests/${item.guestId}`);
+            if (guestResponse && guestResponse.firstName) {
+              item.author = guestResponse.firstName;
+              guestCache.set(item.guestId, guestResponse.firstName);
+            }
+          } catch (error) {
+            console.error(`Failed to fetch guest ${item.guestId}:`, error);
+          }
+        }
+      }
+    }
+
     return { items, count, limit, skip };
   }
 
