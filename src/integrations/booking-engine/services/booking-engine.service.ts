@@ -121,6 +121,14 @@ export class BookingEngineService {
       let listings = response.results || response.data || [];
       
       // --- Advanced Post-Filtering ---
+      const guestOccupancy = (params.adults || (params.checkIn && params.checkOut ? 1 : 0)) + (params.children || 0);
+      if (guestOccupancy > 0) {
+        listings = listings.filter((l: any) => {
+          const capacity = l.accommodates || l.maxGuests || 0;
+          return capacity >= guestOccupancy;
+        });
+      }
+
       if (params.minBedrooms) {
         listings = listings.filter((l: any) => (l.bedrooms || 0) >= params.minBedrooms!);
       }
